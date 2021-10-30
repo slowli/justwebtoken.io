@@ -1,0 +1,46 @@
+extends _layout
+
+block pageInit
+  -
+    entryPoint = 'about';
+    basePath = '..';
+    pages = $pages;
+    const buildInfo = $buildInfo;
+
+block main
+  p.lead.mb-4 This web app was made possible with the help of following awesome tech:
+  ul
+    li.
+      <a href="https://developer.mozilla.org/en-US/docs/WebAssembly/Concepts">WASM</a> – the virtual machine
+      for the Web
+    li.
+      <a href="https://www.rust-lang.org/">Rust programming language</a> and
+      <a href="https://rustwasm.github.io/">Rust → WASM toolchain</a> allowing to bring Rust safety and performance
+      to the browser
+    li.
+      <a href="https://crates.io/crates/jwt-compact">jwt-compact</a> Rust library for managing JWTs
+    li.
+      <a href="https://yew.rs/">Yew framework</a> bringing Rust to the front-end
+
+  p.
+    The website is fully open source! See <a href="https://github.com/slowli/justwebtoken.io">its source code</a>
+    for the full list of dependencies and feel welcome to submit changes or suggest new functionality.
+
+  h3 Build Info
+
+  p
+    em.small Versions of key dependencies to simplify debugging.
+
+  ul
+    li
+      | Deployed commit:
+      |
+      a(href=`https://github.com/slowli/justwebtoken.io/tree/${buildInfo.commit}`) #{buildInfo.commit.substring(0, 7)}
+
+    for dep in Object.entries(buildInfo.deps)
+      -
+        const [depName, depInfo ] = dep;
+      li
+        | #{depName} version:
+        |
+        a(href=`https://crates.io/crates/${depName}/${depInfo.version}`) #{depInfo.version}

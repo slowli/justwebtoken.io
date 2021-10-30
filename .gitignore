@@ -1,0 +1,13 @@
+# Rust; note that the lockfile is intentionally committed
+target
+
+# JavaScript
+node_modules
+npm-debug.log
+
+# IDE
+/.idea
+
+# Build artifacts
+/pkg
+/dist

@@ -1,0 +1,69 @@
+[standard_headers.jku]
+name = "Key set URL"
+link = "https://datatracker.ietf.org/doc/html/rfc7515#section-4.1.2"
+# FIXME: link to JWKS definition
+description = "URL of the JSON Web Key Set containing the key that has signed the token."
+
+[standard_headers.kid]
+name = "Key ID"
+link = "https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.4"
+description = "Identifier of the key that has signed the token."
+
+[standard_headers.x5u]
+name = "Key certificate"
+link = "https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.5"
+description = "URL of the X.509 certificate for the signing key."
+
+[standard_headers."x5t#S256"]
+name = "Key certificate thumbprint"
+link = "https://www.rfc-editor.org/rfc/rfc7515.html#section-4.1.8"
+description = "SHA-256 thumbprint of the X.509 certificate for the signing key."
+
+[standard_headers.typ]
+name = "Type"
+link = "https://tools.ietf.org/html/rfc7519#section-5.1"
+description = "Application-specific token type. Usually set to <code>JWT</code>."
+
+# Standard claims together with their descriptions.
+[standard_claims.exp]
+name = "Expiration timestamp"
+link = "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.4"
+description = """\
+Earliest Unix timestamp after which the token must be \
+rejected as expired. Use of this claim is recommended in order to \
+minimize impact of signing key being compromised.\
+"""
+
+[standard_claims.iat]
+name = "Issuance timestamp"
+link = "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.6"
+description = """\
+Unix timestamp at which token was issued. Useful to determine \
+the token age and for debugging purposes.\
+"""
+
+[standard_claims.nbf]
+name = "Maturity timestamp"
+link = "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.5"
+description = """\
+“Not before” Unix timestamp restricting the minimum clock time \
+required to accept the token (i.e., opposite of the exp claim).\
+"""
+
+[standard_claims.iss]
+name = "Issuer"
+link = "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1"
+description = """\
+Principal that has issued this token. The format is \
+application-specific; generally, it is a string (potentially, a URI). Apps \
+may use the claim to decide whether the issuer is trustworthy.\
+"""
+
+[standard_claims.sub]
+name = "Subject"
+link = "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2"
+description = """\
+Describes entity that the claims apply to. The format is \
+application-specific; generally, it is an ID which is globally unique or \
+unique within the issuer.\
+"""

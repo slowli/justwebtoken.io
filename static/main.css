@@ -1,0 +1,58 @@
+textarea.form-control {
+  resize: none;
+  height: 80px;
+}
+textarea.form-control.small {
+  font-size: .875rem !important;
+}
+
+.text-break-all {
+  word-break: break-all !important;
+}
+
+.body-header {
+  padding: 1rem 1rem 0;
+  color: var(--bs-white);
+  background-color: var(--bs-primary);
+  margin-bottom: 2rem;
+}
+.body-header h1 a,
+.body-header h1 a:hover {
+  color: inherit !important;
+  text-decoration: none !important;
+}
+.body-header .nav-item {
+  border-bottom: 2px solid transparent;
+}
+.body-header .nav-item.active {
+  border-bottom: 2px solid;
+}
+
+.content {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+.page-footer {
+  margin: 4rem -0.5rem 0 -0.5rem;
+  padding: 2rem 0 1.5rem;
+  border-top: 1px solid rgba(0,0,0,0.15);
+}
+
+.code-snippet {
+  padding: 1rem 1.5rem;
+  background-color: #f0f1f2;
+}
+.code-snippet pre {
+  margin-bottom: 0 !important;
+}
+.code-snippet-panel {
+  float: right;
+  position: relative;
+}
+.code-snippet-panel > .btn {
+  position: absolute;
+  right: 0;
+  top: 0;
+  z-index: 10;
+}

@@ -1,0 +1,21 @@
+extends _layout
+
+block pageInit
+  -
+    entryPoint = '';
+    basePath = '.';
+    pages = $pages;
+
+block main
+  p.lead.mb-4.
+    JSON Web Token (JWT) is a set of standards.
+
+  p.
+    Lorem ipsum dolor amet Lorem ipsum dolor amet Lorem ipsum dolor amet Lorem ipsum dolor amet.
+
+  p.
+    Lorem ipsum dolor amet Lorem ipsum dolor amet Lorem ipsum dolor amet Lorem ipsum dolor amet.
+    Lorem ipsum dolor amet Lorem ipsum dolor amet Lorem ipsum dolor amet Lorem ipsum dolor amet.
+
+  div#app-root
+    +loading
