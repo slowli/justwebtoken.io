@@ -115,6 +115,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "const-decoder"
+version = "0.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "302d8c759518abbeeb6ed010119fc0bfdfb093077a9e476876ede76ce9e79604"
+
+[[package]]
 name = "const-oid"
 version = "0.6.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -374,6 +380,7 @@ version = "0.5.0-beta.1"
 dependencies = [
  "assert_matches",
  "base64ct",
+ "const-decoder",
  "ed25519-compact",
  "getrandom",
  "jwt-compact",

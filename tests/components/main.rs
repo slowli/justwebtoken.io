@@ -1,15 +1,32 @@
 //! Tests related to components.
 
+use const_decoder::Decoder;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_test::wasm_bindgen_test_configure;
 use yew::{web_sys::Element, Component, ComponentLink};
 
 use std::collections::HashMap;
 
+mod app;
 mod key_input;
 mod token_input;
 
 wasm_bindgen_test_configure!(run_in_browser);
+
+const HS256_TOKEN: &str = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9.\
+    eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly\
+    9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
+const HS256_KEY: &[u8] = &Decoder::Base64Url.decode::<64>(
+    b"AyM1SysPpbyDfgZld3umj1qzKObwVMkoqQ-EstJQLr_T-1qS0gZH75aKtMN3Yj0iPS4hcgUuTwjAzZr1Z9CAow",
+);
+const K256_JWK: &str = r#"
+    {
+        "crv": "secp256k1",
+        "kty": "EC",
+        "x": "IMZEVh0rQx-QkffNRvdOtM0eUmlWEs6n9RXLUwd4KTQ",
+        "y": "TAWfWF5I1G8CKS0JN0RO2hgPPlzboRsjVIuCfjfYmeI"
+    }
+"#;
 
 struct TestRigBase<C: Component> {
     root_element: Element,
@@ -47,12 +64,33 @@ impl<C: Component> TestRigBase<C> {
     }
 }
 
+fn assert_no_child(root: &Element, selector: &str) {
+    let selected = root.query_selector(selector).unwrap_or_else(|err| {
+        panic!("Cannot query `{}` from {:?}: {:?}", selector, root, err);
+    });
+    if let Some(selected) = selected {
+        panic!("Unexpected element `{}`: {:?}", selector, selected);
+    }
+}
+
 fn select_elements(root: &Element, selector: &str) -> impl Iterator<Item = Element> {
     let nodes = root
         .query_selector_all(selector)
         .unwrap_or_else(|e| panic!("Querying elements `{}` failed: {:?}", selector, e));
 
     (0..nodes.length()).filter_map(move |i| nodes.get(i).unwrap().dyn_into::<Element>().ok())
+}
+
+fn select_single_element(root: &Element, selector: &str) -> Element {
+    let mut iter = select_elements(root, selector);
+    let first = iter.next();
+    let second = iter.next();
+
+    match (first, second) {
+        (None, _) => panic!("`{}` did not match any elements in {:?}", selector, root),
+        (Some(_), Some(_)) => panic!("`{}` matched multiple elements in {:?}", selector, root),
+        (Some(single), None) => single,
+    }
 }
 
 /// Extracts main value from a value column.

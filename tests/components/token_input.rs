@@ -10,7 +10,7 @@ use justwebtoken_io::components::token_input::{
     TokenInput, TokenInputMessage, TokenInputProperties,
 };
 
-use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase};
+use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase, HS256_TOKEN};
 
 struct TestRig {
     base: TestRigBase<TokenInput>,
@@ -23,7 +23,7 @@ impl TestRig {
         let received_token_ = Rc::clone(&received_token);
         let props = TokenInputProperties {
             onchange: Callback::from(move |key| {
-                *received_token_.borrow_mut() = Some(key);
+                *received_token_.borrow_mut() = key;
             }),
         };
 
@@ -50,10 +50,6 @@ impl TestRig {
         extract_rows(&self.base.root_element)
     }
 }
-
-const HS256_TOKEN: &str = "eyJ0eXAiOiJKV1QiLA0KICJhbGciOiJIUzI1NiJ9.\
-    eyJpc3MiOiJqb2UiLA0KICJleHAiOjEzMDA4MTkzODAsDQogImh0dHA6Ly\
-    9leGFtcGxlLmNvbS9pc19yb290Ijp0cnVlfQ.dBjftJeZ4CVP-mB92K27uhbUJU1p1r_wW1gFWFOEjXk";
 
 #[wasm_bindgen_test]
 fn correct_token() {

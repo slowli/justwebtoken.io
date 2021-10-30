@@ -11,7 +11,7 @@ use justwebtoken_io::{
     key_instance::KeyInstance,
 };
 
-use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase};
+use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase, K256_JWK};
 
 struct TestRig {
     base: TestRigBase<KeyInput>,
@@ -24,7 +24,7 @@ impl TestRig {
         let received_key_ = Rc::clone(&received_key);
         let props = KeyInputProperties {
             onchange: Callback::from(move |key| {
-                *received_key_.borrow_mut() = Some(key);
+                *received_key_.borrow_mut() = key;
             }),
         };
 
@@ -54,19 +54,11 @@ impl TestRig {
 
 #[wasm_bindgen_test]
 fn correct_key() {
-    const KEY: &str = r#"
-        {
-            "crv": "secp256k1",
-            "kty": "EC",
-            "x": "IMZEVh0rQx-QkffNRvdOtM0eUmlWEs6n9RXLUwd4KTQ",
-            "y": "TAWfWF5I1G8CKS0JN0RO2hgPPlzboRsjVIuCfjfYmeI"
-        }
-    "#;
     const KEY_THUMBPRINT: &str = "WXjRM2dXofF2PGP339yJXhia89VsAQRBMZA5_lWuYFY";
 
     let rig = TestRig::new();
     rig.base
-        .send_message(KeyInputMessage::SetKey(KEY.to_owned()));
+        .send_message(KeyInputMessage::SetKey(K256_JWK.to_owned()));
 
     assert_matches!(rig.take_received_key(), KeyInstance::K256(_));
 
