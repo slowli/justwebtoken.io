@@ -2,9 +2,11 @@
 
 use base64ct::{Base64UrlUnpadded, Encoding};
 use jwt_compact::{Header, ParseError, UntrustedToken};
-use yew::{classes, html, Component, ComponentLink, Html, InputData, ShouldRender};
+use yew::{
+    classes, html, Callback, Component, ComponentLink, Html, InputData, Properties, ShouldRender,
+};
 
-use super::{common::view_data_row, App, AppMessage};
+use super::common::view_data_row;
 use crate::fields::{Field, StandardHeader};
 
 #[derive(Debug)]
@@ -58,6 +60,7 @@ impl ParsedHeader {
         }
     }
 
+    // TODO: Describe algorithm (in popover?)
     fn view(&self) -> Html {
         html! {
             <>
@@ -93,10 +96,18 @@ impl ParsedHeader {
     }
 }
 
+/// Properties for the `TokenInput` component.
+#[derive(Debug, Clone, PartialEq, Properties)]
+pub struct TokenInputProperties {
+    #[prop_or_default]
+    pub onchange: Callback<UntrustedToken<'static>>,
+}
+
 /// Token input + corresponding diagnostic information.
 #[derive(Debug)]
 pub struct TokenInput {
     link: ComponentLink<Self>,
+    properties: TokenInputProperties,
     state: TokenInputState,
 }
 
@@ -107,11 +118,12 @@ pub enum TokenInputMessage {
 
 impl Component for TokenInput {
     type Message = TokenInputMessage;
-    type Properties = ();
+    type Properties = TokenInputProperties;
 
-    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self {
             link,
+            properties,
             state: TokenInputState::default(),
         }
     }
@@ -122,15 +134,15 @@ impl Component for TokenInput {
                 let (new_state, maybe_token) = TokenInputState::new(token);
                 self.state = new_state;
                 if let Some(token) = maybe_token {
-                    self.parent_link()
-                        .send_message(AppMessage::SetToken(Box::new(token)));
+                    self.properties.onchange.emit(token);
                 }
             }
         }
         true
     }
 
-    fn change(&mut self, _: Self::Properties) -> ShouldRender {
+    fn change(&mut self, properties: Self::Properties) -> ShouldRender {
+        self.properties = properties;
         false
     }
 
@@ -188,11 +200,6 @@ impl Component for TokenInput {
 }
 
 impl TokenInput {
-    fn parent_link(&self) -> ComponentLink<App> {
-        let parent_link = self.link.get_parent().expect("no parent for TokenInput");
-        parent_link.clone().downcast::<App>()
-    }
-
     fn view_parse_err(err: &ParseError) -> Html {
         html! {
             <p class="invalid-feedback mb-1">{ "Error deserializing token: " }{ err }</p>

@@ -9,7 +9,7 @@ use std::fmt;
 
 mod common;
 pub mod key_input;
-mod token_input;
+pub mod token_input;
 
 use self::{key_input::KeyInput, token_input::TokenInput};
 use crate::{
@@ -61,6 +61,10 @@ pub enum AppMessage {
 impl AppMessage {
     fn new_key(key: KeyInstance) -> Self {
         Self::SetKey(Box::new(key))
+    }
+
+    fn new_token(token: UntrustedToken<'static>) -> Self {
+        Self::SetToken(Box::new(token))
     }
 }
 
@@ -265,7 +269,7 @@ impl Component for App {
                     <div class="mb-3">
                         <KeyInput onchange=self.link.callback(AppMessage::new_key) />
                     </div>
-                    <TokenInput />
+                    <TokenInput onchange=self.link.callback(AppMessage::new_token) />
                 </form>
 
                 <hr class="mb-4" />
