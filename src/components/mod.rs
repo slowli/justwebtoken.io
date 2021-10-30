@@ -1,6 +1,4 @@
-//! Application.
-
-// FIXME: deserialize & display claims on empty key.
+//! Application components.
 
 use jwt_compact::{UntrustedToken, ValidationError};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};

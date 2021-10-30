@@ -203,7 +203,13 @@ impl Component for KeyInput {
     }
 
     fn view(&self) -> Html {
-        let mut control_classes = classes!("form-control", "mb-1");
+        let mut control_classes = classes![
+            "form-control",
+            "mb-1",
+            "font-monospace",
+            "small",
+            "text-break-all"
+        ];
         let err = self.state.error();
         if err.is_some() {
             control_classes.push("is-invalid");
@@ -217,15 +223,16 @@ impl Component for KeyInput {
             },
             html! {
                 <>
-                    <input
-                        type="text"
+                    <textarea
                         id="key"
                         class=control_classes
                         placeholder="Encoded key"
-                        value=self.state.raw_key.clone()
                         oninput=self.link.callback(move |e: InputData| {
                             KeyInputMessage::SetKey(e.value)
-                        }) />
+                        }) >
+                        { &self.state.raw_key }
+                    </textarea>
+
                     { if let Some(err) = err {
                         Self::view_err(err)
                     } else {
