@@ -100,7 +100,7 @@ impl ParsedHeader {
 #[derive(Debug, Clone, PartialEq, Properties)]
 pub struct TokenInputProperties {
     #[prop_or_default]
-    pub onchange: Callback<UntrustedToken<'static>>,
+    pub onchange: Callback<Option<UntrustedToken<'static>>>,
 }
 
 /// Token input + corresponding diagnostic information.
@@ -133,9 +133,7 @@ impl Component for TokenInput {
             TokenInputMessage::SetToken(token) => {
                 let (new_state, maybe_token) = TokenInputState::new(token);
                 self.state = new_state;
-                if let Some(token) = maybe_token {
-                    self.properties.onchange.emit(token);
-                }
+                self.properties.onchange.emit(maybe_token);
             }
         }
         true

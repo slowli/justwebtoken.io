@@ -78,7 +78,7 @@ impl ParsedKey {
     const THUMBPRINT_FIELD: Field = Field {
         name: "Key thumbprint (SHA-256)",
         description: "As defined in RFC 7638, a key thumbprint is computed by hashing its \
-            canonical <abbr title=\"JSON web key\"JWK</abbr> presentation (only necessary fields \
+            canonical <abbr title=\"JSON web key\">JWK</abbr> presentation (only necessary fields \
             sorted in alphabetic order). SHA-256 hash function is used for hashing.",
         link: "https://tools.ietf.org/html/rfc7638",
     };
@@ -163,7 +163,7 @@ pub enum KeyInputMessage {
 #[derive(Debug, Clone, PartialEq, Properties)]
 pub struct KeyInputProperties {
     #[prop_or_default]
-    pub onchange: Callback<KeyInstance>,
+    pub onchange: Callback<Option<KeyInstance>>,
 }
 
 #[derive(Debug)]
@@ -191,9 +191,7 @@ impl Component for KeyInput {
             KeyInputMessage::SetKey(key) => {
                 let (new_state, maybe_key) = KeyInputState::new(key);
                 self.state = new_state;
-                if let Some(key) = maybe_key {
-                    self.properties.onchange.emit(key);
-                }
+                self.properties.onchange.emit(maybe_key);
             }
         }
         true

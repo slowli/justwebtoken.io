@@ -22,7 +22,7 @@ impl FieldWithValue<'_> {
     }
 }
 
-fn str_to_html(html_str: &str) -> Html {
+pub fn str_to_html(html_str: &str) -> Html {
     let div = yew::utils::document().create_element("div").unwrap();
     div.set_inner_html(html_str);
     Html::VRef(div.into())

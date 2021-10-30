@@ -11,17 +11,36 @@ mod common;
 pub mod key_input;
 pub mod token_input;
 
-use self::{key_input::KeyInput, token_input::TokenInput};
+use self::{
+    common::{str_to_html, view_data_row},
+    key_input::KeyInput,
+    token_input::TokenInput,
+};
 use crate::{
     fields::StandardClaim,
     key_instance::{GenericClaims, GenericToken, KeyInstance},
 };
 
+/// Result of token verification.
+#[derive(Debug)]
+enum TokenResult {
+    /// No sufficient inputs to verify the token.
+    None,
+    /// Token was verified successfully.
+    Ok(Box<GenericToken>),
+    Err {
+        /// Error verifying the token.
+        err: ValidationError,
+        /// Claims that could be recovered from the token.
+        claims: Option<GenericClaims>,
+    },
+}
+
 #[derive(Debug)]
 struct AppState {
     key: Option<KeyInstance>,
     token: Option<UntrustedToken<'static>>,
-    result: Result<Option<GenericToken>, ValidationError>,
+    result: TokenResult,
 }
 
 impl Default for AppState {
@@ -29,7 +48,7 @@ impl Default for AppState {
         Self {
             key: None,
             token: None,
-            result: Ok(None),
+            result: TokenResult::None,
         }
     }
 }
@@ -39,32 +58,47 @@ impl AppState {
         let key = if let Some(key) = &self.key {
             key
         } else {
+            self.result = TokenResult::None;
             return;
         };
 
         let token = if let Some(token) = &self.token {
             token
         } else {
+            self.result = TokenResult::None;
             return;
         };
 
-        self.result = key.verify_token(token).map(Some);
+        self.result = match key.verify_token(token) {
+            Ok(token) => TokenResult::Ok(Box::new(token)),
+            Err(err) => {
+                let claims = if matches!(err, ValidationError::MalformedClaims(_)) {
+                    // No sense to try deserializing claims again.
+                    None
+                } else {
+                    token
+                        .deserialize_claims_unchecked::<serde_json::Value>()
+                        .ok()
+                };
+                TokenResult::Err { err, claims }
+            }
+        };
     }
 }
 
 #[derive(Debug)]
 pub enum AppMessage {
-    SetKey(Box<KeyInstance>),
-    SetToken(Box<UntrustedToken<'static>>),
+    SetKey(Option<Box<KeyInstance>>),
+    SetToken(Option<Box<UntrustedToken<'static>>>),
 }
 
 impl AppMessage {
-    fn new_key(key: KeyInstance) -> Self {
-        Self::SetKey(Box::new(key))
+    pub fn new_key(key: Option<KeyInstance>) -> Self {
+        Self::SetKey(key.map(Box::new))
     }
 
-    fn new_token(token: UntrustedToken<'static>) -> Self {
-        Self::SetToken(Box::new(token))
+    pub fn new_token(token: Option<UntrustedToken<'static>>) -> Self {
+        Self::SetToken(token.map(Box::new))
     }
 }
 
@@ -75,13 +109,18 @@ pub struct App {
 }
 
 impl App {
-    fn view_claims(token: &GenericToken) -> Html {
+    fn view_claims(claims: &GenericClaims, err: Option<&ValidationError>) -> Html {
         html! {
             <>
                 <div class="d-flex flex-row mb-3">
                     <h2 class="mb-0 me-5">{ "Claims" }</h2>
                     { Self::view_claims_nav() }
                 </div>
+                { if let Some(err) = err {
+                    Self::view_err(err)
+                } else {
+                    html! {}
+                }}
                 <div class="tab-content">
                     <div
                         class="tab-pane fade show active"
@@ -89,7 +128,7 @@ impl App {
                         role="tabpanel"
                         aria-labelledby="decoded-claims-tab">
 
-                        { Self::view_decoded_claims(token.claims()) }
+                        { Self::view_decoded_claims(claims) }
                     </div>
                     <div
                         class="tab-pane fade"
@@ -97,7 +136,7 @@ impl App {
                         role="tabpanel"
                         aria-labelledby="raw-claims-tab">
 
-                        { Self::view_raw_claims(token.claims()) }
+                        { Self::view_raw_claims(claims) }
                     </div>
                 </div>
             </>
@@ -106,7 +145,7 @@ impl App {
 
     fn view_claims_nav() -> Html {
         html! {
-            <nav class="nav nav-pills mb-3">
+            <nav class="nav nav-pills">
                 <button
                     class="nav-link active"
                     id="decoded-claims-tab"
@@ -170,36 +209,31 @@ impl App {
             html! { { value } }
         };
 
-        html! {
-            <div class="mb-2 row">
-                <div class="col-3">
-                    { claim.name }
-                    { " " }
-                    <span
-                        class="badge bg-info text-dark"
-                        title="Name of the claim field in claims object">
-                        { field_name }
-                    </span>
-                </div>
-                <div class="col-9">
-                    <div class="mb-0">{ value }</div>
-                    <div class="text-muted small"> { claim.description }</div>
-                </div>
-            </div>
-        }
+        let label = html! {
+            <>
+                <label>{ claim.name }</label>
+                { " " }
+                <span
+                    class="badge bg-info text-dark"
+                    title="Name of the claim field in claims object">
+                    { field_name }
+                </span>
+            </>
+        };
+        let value = html! {
+            <>
+                <div class="mb-0">{ value }</div>
+                <div class="text-muted small"> { claim.description }</div>
+            </>
+        };
+        view_data_row(label, value)
     }
 
     fn view_unknown_claim(field_name: &str, value: &str) -> Html {
-        html! {
-            <div class="mb-2 row">
-                <div class="col-3">
-                    { field_name }
-                </div>
-                <div class="col-9">
-                    <div class="mb-0"><code>{ value }</code></div>
-                </div>
-            </div>
-        }
+        view_data_row(
+            html! { <label>{ field_name }</label> },
+            html! { <div class="mb-0"><code>{ value }</code></div> },
+        )
     }
 
     fn view_raw_claims(claims: &GenericClaims) -> Html {
@@ -216,10 +250,37 @@ impl App {
         }
     }
 
-    // FIXME: render properly
     fn view_err(err: &ValidationError) -> Html {
+        let tip = match err {
+            ValidationError::InvalidSignature | ValidationError::AlgorithmMismatch { .. } => Some(
+                "Check that the key is appropriate for token verification. \
+                 If the token provides <code>kid</code> header, it can be used to identify \
+                 the key, especially if <code>kid</code> it is a key thumbprint.",
+            ),
+            ValidationError::MalformedSignature(_) => {
+                Some("Check that the token is pasted fully into the corresponding input.")
+            }
+            ValidationError::MalformedClaims(_) => {
+                Some("Check that the token is correctly pasted into the corresponding input.")
+            }
+            _ => None,
+        };
+
         html! {
-            { err }
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">{ "Error verifying token" }</h4>
+                <p>{ err }</p>
+                { if let Some(tip) = tip {
+                    html! {
+                        <>
+                            <hr/>
+                            <p class="mb-0 small">{ str_to_html(tip) }</p>
+                        </>
+                    }
+                } else {
+                    html! {}
+                }}
+            </div>
         }
     }
 
@@ -229,6 +290,17 @@ impl App {
             Self::view_claim(field_name, claim, &value_str, true)
         } else {
             Self::view_unknown_claim(field_name, &value_str)
+        }
+    }
+
+    fn view_no_inputs_hint() -> Html {
+        html! {
+            <div class="alert alert-info" role="alert">
+                <h4>{ "No key / token" }</h4>
+                <p class="mb-0">
+                    { "Provide valid key and token in the inputs above to start verification." }
+                </p>
+            </div>
         }
     }
 }
@@ -247,10 +319,10 @@ impl Component for App {
     fn update(&mut self, message: Self::Message) -> ShouldRender {
         match message {
             AppMessage::SetKey(key) => {
-                self.state.key = Some(*key);
+                self.state.key = key.map(|boxed| *boxed);
             }
             AppMessage::SetToken(token) => {
-                self.state.token = Some(*token);
+                self.state.token = token.map(|boxed| *boxed);
             }
         }
         self.state.update();
@@ -265,19 +337,19 @@ impl Component for App {
         html! {
             <>
                 <h2>{ "Verification inputs" }</h2>
-                <form class="mb-5">
+                <form class="mb-4">
                     <div class="mb-3">
                         <KeyInput onchange=self.link.callback(AppMessage::new_key) />
                     </div>
                     <TokenInput onchange=self.link.callback(AppMessage::new_token) />
                 </form>
 
-                <hr class="mb-4" />
-
                 { match &self.state.result {
-                    Ok(Some(token)) => Self::view_claims(token),
-                    Err(err) => Self::view_err(err),
-                    _ => html!{}
+                    TokenResult::Ok(token) => Self::view_claims(token.claims(), None),
+                    TokenResult::Err { err, claims: Some(claims) } =>
+                        Self::view_claims(claims, Some(err)),
+                    TokenResult::Err { err, claims: None } => Self::view_err(err),
+                    TokenResult::None => Self::view_no_inputs_hint(),
                 }}
             </>
         }
