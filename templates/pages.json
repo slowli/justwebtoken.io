@@ -1,6 +1,11 @@
 {
   "": {
-    "title": "Token verification",
+    "title": "Intro to JWTs",
+    "description": "Gentle introduction to technologies underpinning JSON web tokens."
+  },
+  "verify": {
+    "title": "JWT verification",
+    "navTitle": "Verify",
     "description": "Simple tool to verify JSON web tokens.",
     "scripts": ["self", "bootstrap", "jquery"]
   },

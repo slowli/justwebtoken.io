@@ -42,7 +42,7 @@ function createBuildInfo() {
 }
 
 module.exports = {
-  entry: { index: './index.js' },
+  entry: { verify: './verify.js' },
   output: {
     path: distPath,
     filename: '[name].js',

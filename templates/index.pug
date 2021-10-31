@@ -8,19 +8,74 @@ block pageInit
 
 block main
   p.lead.mb-4.
-    JSON Web Token (JWT) is a set of standards.
+    <a href="https://datatracker.ietf.org/doc/html/rfc7519">JSON Web Token</a> (JWT) is a standard
+    way to represent authenticated claims transferred between two parties.
 
   p.
-    Lorem ipsum dolor amet Lorem ipsum dolor amet Lorem ipsum dolor amet Lorem ipsum dolor amet.
+    Typical JWT <em>issuer</em> is a server communicating with a client, who is the claims <em>subject</em>.
+    JWTs are in order to offload state management related to authentication and authorization.
+    Once issued, a JWT can be used by a subject a number of times for authentication with the issuer
+    or third parties. Typically, a JWT is transferred from the client as a
+    <a href="https://datatracker.ietf.org/doc/html/rfc6750">bearer token</a>, that is,
+    within the <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Authorization"><code>Authorization</code> header</a>
+    of the HTTP request.
+
+  //- TODO: add sequence diagram (SVG?)
 
   p.
-    Lorem ipsum dolor amet Lorem ipsum dolor amet Lorem ipsum dolor amet Lorem ipsum dolor amet.
-    Lorem ipsum dolor amet Lorem ipsum dolor amet Lorem ipsum dolor amet Lorem ipsum dolor amet.
+    The party receiving a JWT can verify it independently and without maintaining a persistent
+    session with the client (which is how authentication generally worked in schemes proposed earlier, e.g., ones based on cookies).
+    In other words, JWT-based authentication is <em>stateless</em>.
 
-  form.mb-3
-    div.form-check.form-switch
-      input.form-check-input#toggle-descriptions(type='checkbox', role='switch', checked)
-      label.form-check-label(for='toggle-descriptions') Show extended descriptions for token and key properties
+  p.
+    JWTs rely on cryptographic primitives – encryption or digital signatures – to ensure claim integrity,
+    i.e., the fact that claims provided within a JWT have not been tampered with and come from a trusted issuer.
+    As such, JWT is an extension of other standards: <a href="https://datatracker.ietf.org/doc/html/rfc7515">JSON Web Signature</a> (JWS)
+    and <a href="https://datatracker.ietf.org/doc/html/rfc7516">JSON Web Encryption</a> (JWE).
 
-  div#app-root
-    +loading
+  p.
+    Tokens based on asymmetric signature algorithms, such as <a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">RSA</a>
+    or <a href="https://en.wikipedia.org/wiki/EdDSA">EdDSA</a>, allow independent verification
+    since information necessary to verify token integrity (a <em>verifying key</em>) is non-secret and does not compromise
+    information necessary to issue a token (a <em>signing key</em>).
+    Even if verifier is logically the same as the token issuer, it can be split off in terms of systems,
+    thus reducing centralization and risk of secret leakage.
+    Hence, JWS-powered JWTs are more common and sometimes used without the “JWS” qualifier.
+
+  h2(id='alternatives') Alternatives
+
+  p.
+    There are several technologies providing functionality similar to that of JWTs, although use cases
+    they cover differ from ones where JWTs are typically employed.
+
+  h3(id='macaroons') Macaroons
+
+  p.
+    <a href="https://theory.stanford.edu/%7Eataly/Papers/macaroons.pdf"><strong>Macaroons</strong></a> are
+    authorization credentials cryptographically protected with hash-based message authentication codes
+    (<a href="https://en.wikipedia.org/wiki/HMAC">HMACs</a>).
+    Most notably, the subject can pass a macaroon to a third party narrowing down the list of its credentials
+    with the help of <em>caveats</em> (e.g., go from “read all resources of a certain type” to
+    “read the resource with a specific ID”); such a macaroon will still be cryptographically protected.
+  p.
+    In contrast to JWTs, information in macaroons is narrowly focused on authorization claims (i.e.,
+    “the subject can do X” instead of “the subject is X”).
+    Partially because of relatively complicated use cases for caveats, macaroons are less popular compared to JWTs.
+
+  h3(id='verifiable-credentials') Verifiable credentials
+
+  p.
+    <a href="https://www.w3.org/TR/vc-data-model/"><strong>Verifiable credentials</strong></a> (VCs) is a relatively recent Web standard
+    for representing, issuing and verifying claims.
+    Compared to JWTs, VCs are much more focused on third-party, universal verification (JWTs are mostly verified
+    by the issuer at least from the organizational perspective).
+    Accordingly, VC holder is an active party making a conscious decision which VCs to provide for verification and to whom,
+    while in JWT case this is usually fully automated by client-side scripting.
+
+  p.
+    Because of the technology recency, VCs are less supported compared to JWTs.
+    Complicating this matter, VCs may employ more complex cryptography,
+    such as <a href="https://privacypatterns.org/patterns/Attribute-based-credentials">attribute-based credentials</a>,
+    in order to overcome limitations imposed by simpler JWT crypto.
+    For example, linking usage of a single JWT is trivial (the JWT is provided in plaintext for each usage),
+    while VC constructions may specifically design for non-linkable usage.

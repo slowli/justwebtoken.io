@@ -53,7 +53,6 @@ impl FieldWithValue {
             <>
                 { " " }
                 <a href=link
-                    rel="nofollow"
                     class="text-decoration-none"
                     title="View field definition">
                     { Icon::Link.to_html() }

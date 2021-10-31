@@ -1,0 +1,58 @@
+extends _layout
+
+block pageInit
+  -
+    entryPoint = 'verify';
+    basePath = '..';
+    pages = $pages;
+
+block main
+  p.lead.
+    The form below allows verifying <abbr title="JSON web signature">JWS</abbr>-based tokens.
+
+  p.
+    The following signature schemes are supported:
+  table.table
+    thead
+      tr
+        th(scope='col') Signature scheme
+        th(scope='col').
+          <abbr title="JSON web algorithm">JWA</abbr> specifier(s)
+    tbody
+      tr
+        td.
+          <a href="https://en.wikipedia.org/wiki/HMAC">HMAC</a>
+        td.
+          <code>HS256</code>, <code>HS384</code>, <code>HS512</code>
+      tr
+        td.
+          <a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">RSA</a>
+        td.
+          <code>RS256</code>, <code>RS384</code>, <code>RS512</code>, <code>PS256</code>, <code>PS384</code>, <code>PS512</code>
+      tr
+        td.
+          <a href="https://en.wikipedia.org/wiki/EdDSA#Ed25519">Ed25519</a> elliptic curve
+        td.
+          <code>EdDSA</code>
+      tr
+        td.
+          <a href="https://github.com/bitcoin-core/secp256k1/">secp256k1</a> elliptic curve
+        td.
+          <code>ES256K</code> (non-standard)
+
+  p.
+    Verification uses pure-<a href="https://rust-lang.org/">Rust</a> <a href="https://crates.io/crates/jwt-compact">jwt-compact</a> library
+    with similarly pure-Rust crypto backends and a pure-Rust <a href="https://yew.rs/">Yew</a>-powered front-end,
+    all neatly packaged into a <a href="https://developer.mozilla.org/en-US/docs/WebAssembly">WASM</a> module.
+    As such, no calls are made to the server, and the website, once loaded, works offline.
+    See <a href="./about"><em>About</em></a> for more details.
+
+  //- TODO: move settings to offcanvas?
+  form.my-3
+    div.form-check.form-switch
+      input.form-check-input#toggle-descriptions(type='checkbox', role='switch', checked)
+      label.form-check-label(for='toggle-descriptions') Show extended descriptions for token and key properties
+
+  //- FIXME: add anchors on change
+  div#app-root
+    +loading

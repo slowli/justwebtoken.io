@@ -111,7 +111,7 @@ impl App {
         html! {
             <>
                 <div class="d-flex flex-row mb-3">
-                    <h2 class="mb-0 me-5">{ "Claims" }</h2>
+                    <h3 id="claims" class="mb-0 me-5">{ "Claims" }</h3>
                     { Self::view_claims_nav() }
                 </div>
                 { if let Some(err) = err {
@@ -334,7 +334,7 @@ impl Component for App {
     fn view(&self) -> Html {
         html! {
             <>
-                <h2>{ "Verification inputs" }</h2>
+                <h3 id="inputs">{ "Inputs" }</h3>
                 <form class="mb-4">
                     <div class="mb-3">
                         <KeyInput onchange=self.link.callback(AppMessage::new_key) />
