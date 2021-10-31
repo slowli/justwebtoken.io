@@ -1,7 +1,6 @@
 //! Row with the JSON web key input.
 
-// FIXME: warn if signing key.
-// FIXME: base64/hex key input + type (symmetric | ed25519 | k256)
+// TODO: base64/hex key input + type (symmetric | ed25519 | k256)
 
 use base64ct::{Base64UrlUnpadded, Encoding};
 use jwt_compact::jwk::{JsonWebKey, JwkError};
@@ -12,7 +11,7 @@ use yew::{
 
 use std::fmt;
 
-use super::common::view_data_row;
+use super::common::{view_data_row, Icon};
 use crate::{fields::Field, key_instance::KeyInstance};
 
 /// Key type together with auxiliary information.
@@ -68,29 +67,55 @@ struct ParsedKey {
 
 impl ParsedKey {
     const KEY_FIELD: Field = Field {
-        name: "Key type",
+        name: "Type",
         description: "Different key types may be used with different signing algorithms. \
             The mapping is not 1-to-1, however; e.g., RSA keys can be used with any of 6 \
             <code>RS*</code> and <code>PS*</code> algorithms.",
-        link: "",
+        link: None,
     };
 
     const THUMBPRINT_FIELD: Field = Field {
-        name: "Key thumbprint (SHA-256)",
+        name: "Thumbprint (SHA-256)",
         description: "As defined in RFC 7638, a key thumbprint is computed by hashing its \
             canonical <abbr title=\"JSON web key\">JWK</abbr> presentation (only necessary fields \
             sorted in alphabetic order). SHA-256 hash function is used for hashing.",
-        link: "https://tools.ietf.org/html/rfc7638",
+        link: Some("https://tools.ietf.org/html/rfc7638"),
+    };
+
+    const KEY_USAGE_FIELD: Field = Field {
+        name: "Usage",
+        description: "JWK for a signing key is always valid as a JWK for the corresponding \
+            verifying key. Thus, it could be mistakenly used instead of a verifying JWK.",
+        link: None,
     };
 
     fn view(&self) -> Html {
+        let should_warn =
+            self.is_signing_key /*&& !matches!(self.key_type, ExtendedKeyType::Symmetric { .. })*/;
         let thumbprint = Base64UrlUnpadded::encode_string(&self.sha256_thumbprint);
         html! {
             <>
+                { if should_warn {
+                    Self::view_signing_key_warning()
+                } else {
+                    html!{}
+                }}
                 { Self::KEY_FIELD.with_value(&self.key_type).view_aux() }
                 { Self::THUMBPRINT_FIELD.with_value(&thumbprint).view_aux() }
             </>
         }
+    }
+
+    fn view_signing_key_warning() -> Html {
+        let usage = html! {
+            <>
+                <span class="badge bg-warning text-dark" title="Potentially incorrect key usage!">
+                    { Icon::Warning.to_html() }{ " signing" }
+                </span>
+                <span class="badge bg-secondary">{ "verification" }</span>
+            </>
+        };
+        Self::KEY_USAGE_FIELD.with_html_value(usage).view_aux()
     }
 }
 

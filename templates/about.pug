@@ -6,6 +6,7 @@ block pageInit
     basePath = '..';
     pages = $pages;
     const buildInfo = $buildInfo;
+    const { commitHash } = buildInfo.git;
 
 block main
   p.lead.mb-4 This web app was made possible with the help of following awesome tech:
@@ -35,7 +36,7 @@ block main
     li
       | Deployed commit:
       |
-      a(href=`https://github.com/slowli/justwebtoken.io/tree/${buildInfo.commit}`) #{buildInfo.commit.substring(0, 7)}
+      a(href=`https://github.com/slowli/justwebtoken.io/tree/${commitHash}`) #{commitHash.substring(0, 7)}
 
     for dep in Object.entries(buildInfo.deps)
       -

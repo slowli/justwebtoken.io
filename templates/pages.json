@@ -2,7 +2,7 @@
   "": {
     "title": "Token verification",
     "description": "Simple tool to verify JSON web tokens.",
-    "scripts": ["self", "bootstrap"]
+    "scripts": ["self", "bootstrap", "jquery"]
   },
   "claims": {
     "title": "Claims",

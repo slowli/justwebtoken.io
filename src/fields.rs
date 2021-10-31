@@ -1,6 +1,7 @@
 //! Standard claims and token headers.
 
 use once_cell::sync::Lazy;
+use yew::{html, Html};
 
 use std::{collections::HashMap, fmt};
 
@@ -8,17 +9,24 @@ use std::{collections::HashMap, fmt};
 pub struct Field {
     pub name: &'static str,
     pub description: &'static str,
-    pub link: &'static str,
+    pub link: Option<&'static str>,
 }
 
-#[derive(Clone, Copy)]
-pub struct FieldWithValue<'a> {
+#[derive(Clone)]
+pub struct FieldWithValue {
     pub field: Field,
-    pub value: &'a dyn fmt::Display,
+    pub value: Html,
 }
 
 impl Field {
-    pub fn with_value(self, value: &dyn fmt::Display) -> FieldWithValue<'_> {
+    pub fn with_value(self, value: &dyn fmt::Display) -> FieldWithValue {
+        FieldWithValue {
+            field: self,
+            value: html! { value },
+        }
+    }
+
+    pub fn with_html_value(self, value: Html) -> FieldWithValue {
         FieldWithValue { field: self, value }
     }
 }
@@ -53,7 +61,7 @@ impl StandardHeader {
         HEADERS_MAP[name]
     }
 
-    pub fn with_value(self, value: &dyn fmt::Display) -> FieldWithValue<'_> {
+    pub fn with_value(self, value: &dyn fmt::Display) -> FieldWithValue {
         self.0.with_value(value)
     }
 }

@@ -50,7 +50,7 @@ impl ParsedHeader {
     const ALG_FIELD: Field = Field {
         name: "Algorithm",
         description: "Integrity algorithm used to secure the token.",
-        link: "https://datatracker.ietf.org/doc/html/rfc7515#section-4.1.1",
+        link: Some("https://datatracker.ietf.org/doc/html/rfc7515#section-4.1.1"),
     };
 
     fn new(token: &UntrustedToken<'_>) -> Self {

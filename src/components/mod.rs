@@ -221,7 +221,7 @@ impl App {
         let value = html! {
             <>
                 <div class="mb-0">{ value }</div>
-                <div class="text-muted small"> { claim.description }</div>
+                <div class="text-muted small toggled-description"> { claim.description }</div>
             </>
         };
         view_data_row(label, value)

@@ -1,3 +1,4 @@
+const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const pug = require('pug');
@@ -18,13 +19,25 @@ function getDependencyInfo(dependencyName) {
   };
 }
 
+// TODO: get this info in CD builds
+function getGitInfo() {
+  const gitOutput = execSync('git status --porcelain=v2 --branch', {
+    encoding: 'utf8'
+  });
+  const gitOutputLines = gitOutput.split('\n');
+  const commitLine = gitOutputLines.find((line) => line.startsWith('# branch.oid'));
+  const commitHash = commitLine.match(/\b(?<hash>[0-9a-f]{40})$/).groups.hash;
+  const isDirty = gitOutputLines.some((line) => line.startsWith('1 ') || line.startsWith('2 '));
+  return { commitHash, isDirty };
+}
+
 function createBuildInfo() {
   return {
     deps: {
       'jwt-compact': getDependencyInfo('jwt-compact'),
       yew: getDependencyInfo('yew')
     },
-    commit: '??????' // FIXME: use real commit
+    git: getGitInfo()
   };
 }
 

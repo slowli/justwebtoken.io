@@ -63,9 +63,9 @@ fn correct_key() {
     assert_matches!(rig.take_received_key(), KeyInstance::K256(_));
 
     let rows = rig.rows();
-    let key_type = extract_main_value(&rows["Key type"]);
+    let key_type = extract_main_value(&rows["Type"]);
     assert_eq!(key_type, "Elliptic curve (secp256k1)");
-    let key_thumbprint = extract_main_value(&rows["Key thumbprint (SHA-256)"]);
+    let key_thumbprint = extract_main_value(&rows["Thumbprint (SHA-256)"]);
     assert_eq!(key_thumbprint, KEY_THUMBPRINT);
 }
 
@@ -78,7 +78,7 @@ fn incorrect_key_serialization() {
     rig.assert_no_received_key();
 
     let rows = rig.rows();
-    assert!(!rows.contains_key("Key type"), "{:?}", rows);
+    assert!(!rows.contains_key("Type"), "{:?}", rows);
 
     let feedback = extract_feedback(&rows["Verification key"]);
     assert!(feedback.contains("expected value"), "{}", feedback);
@@ -97,9 +97,9 @@ fn unsupported_key_type() {
     rig.assert_no_received_key();
 
     let rows = rig.rows();
-    let key_type = extract_main_value(&rows["Key type"]);
+    let key_type = extract_main_value(&rows["Type"]);
     assert_eq!(key_type, "Elliptic curve (secp256r1)");
-    assert!(rows.contains_key("Key thumbprint (SHA-256)"));
+    assert!(rows.contains_key("Thumbprint (SHA-256)"));
 
     let feedback = extract_feedback(&rows["Verification key"]);
     assert!(

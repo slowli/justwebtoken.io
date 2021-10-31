@@ -1,15 +1,42 @@
 //! Common reused components.
 
-use yew::{html, Html};
+use yew::{classes, html, Html};
 
 use crate::fields::FieldWithValue;
 
-impl FieldWithValue<'_> {
-    // FIXME: render link
-    pub fn view_aux(&self) -> Html {
+#[derive(Debug, Clone, Copy)]
+pub enum Icon {
+    Link,
+    Warning,
+}
+
+impl Icon {
+    fn icon_class(self) -> &'static str {
+        match self {
+            Self::Link => "bi-link-45deg",
+            Self::Warning => "bi-exclamation-diamond",
+        }
+    }
+
+    pub fn to_html(self) -> Html {
+        html! { <i class=classes!("bi", self.icon_class())></i> }
+    }
+}
+
+impl FieldWithValue {
+    pub fn view_aux(self) -> Html {
         let field = &self.field;
         view_data_row(
-            html! { <label class="ms-md-3 text-decoration-underline">{ field.name }</label> },
+            html! {
+                <>
+                    <label class="ms-md-3 text-decoration-underline">{ field.name }</label>
+                    { if let Some(link) = field.link {
+                        Self::view_link(link)
+                    } else {
+                        html!{}
+                    }}
+                </>
+            },
             html! {
                 <>
                     <div>{ self.value }</div>
@@ -19,6 +46,20 @@ impl FieldWithValue<'_> {
                 </>
             },
         )
+    }
+
+    fn view_link(link: &'static str) -> Html {
+        html! {
+            <>
+                { " " }
+                <a href=link
+                    rel="nofollow"
+                    class="text-decoration-none"
+                    title="View field definition">
+                    { Icon::Link.to_html() }
+                </a>
+            </>
+        }
     }
 }
 

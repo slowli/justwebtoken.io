@@ -16,14 +16,14 @@ use std::{
 struct Field {
     name: String,
     description: String,
-    link: String,
+    link: Option<String>,
 }
 
 impl fmt::Display for Field {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             formatter,
-            "Field {{ name: \"{name}\", description: \"{descr}\", link: \"{link}\" }}",
+            "Field {{ name: {name:?}, description: {descr:?}, link: {link:?} }}",
             name = self.name,
             descr = self.description.trim(),
             link = self.link
