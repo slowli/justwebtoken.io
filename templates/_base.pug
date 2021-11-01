@@ -27,18 +27,14 @@ html(lang='en', prefix="og:http://ogp.me/ns#")
       {
         "@context": "https://schema.org/",
         "@type": "#{(entryPoint === '') ? 'WebSite' : 'WebPage'}",
-      "author": {
-        "@type": "Person",
-        "name": "Alex Ostrovski"
-      },
-      "headline": "#{page.title}",
-      "description": "#{page.description}"
+        "author": {
+          "@type": "Person",
+          "name": "Alex Ostrovski"
+        },
+        "headline": "#{page.title}",
+        "description": "#{page.description}"
       }
 
     title #{page.title} | Just Web Tokens
-    link(rel='stylesheet', href=`${basePath}/commons.css`)
   body
     block body
-
-    script(src=`${basePath}/commons.js`)
-    script(src=`${basePath}/${(entryPoint === '') ? 'index' : entryPoint }.js`)

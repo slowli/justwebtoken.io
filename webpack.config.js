@@ -2,10 +2,9 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const pug = require('pug');
 const toml = require('toml');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 
 const pages = require('./templates/pages.json');
@@ -43,12 +42,23 @@ function createBuildInfo() {
   };
 }
 
+const entry = {
+  index: './webpack/index.js',
+  verify: './webpack/verify.js',
+  about: './webpack/about.js'
+};
+
+const htmlPlugins = Object.keys(entry).map((entry) => {
+  return new HtmlWebpackPlugin({
+    filename: entry === 'index' ? 'index.html' : `${entry}/index.html`,
+    chunks: [entry, 'commons'],
+    template: `templates/${entry}.pug`,
+    templateParameters: { $pages: pages, $buildInfo: buildInfo }
+  });
+});
+
 module.exports = {
-  entry: {
-    index: './webpack/index.js',
-    verify: './webpack/verify.js',
-    about: './webpack/about.js'
-  },
+  entry,
   output: {
     path: distPath,
     filename: '[name].js',
@@ -62,6 +72,10 @@ module.exports = {
       {
         test: /\.css$/i,
         use: [MiniCssExtractPlugin.loader, 'css-loader']
+      },
+      {
+        test: /\.pug$/i,
+        loader: 'pug-loader'
       }
     ]
   },
@@ -80,31 +94,10 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin(),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: './templates/*.pug',
-          globOptions: { ignore: ['**/_*.pug'] },
-
-          to({ absoluteFilename }) {
-            const isIndex = absoluteFilename.endsWith('index.pug');
-            return isIndex ? 'index.html' : '[name]/index.html';
-          },
-
-          toType: 'template',
-
-          transform(content, path) {
-            const render = pug.compile(content, {
-              filename: path
-            });
-            return render({ $pages: pages, $buildInfo: buildInfo });
-          }
-        }
-      ],
-    }),
     new WasmPackPlugin({
       crateDirectory: ".",
       extraArgs: "--no-typescript",
-    })
+    }),
+    ...htmlPlugins
   ]
 };
