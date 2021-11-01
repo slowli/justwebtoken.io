@@ -1,8 +1,10 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+
 const pug = require('pug');
 const toml = require('toml');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 
@@ -42,7 +44,11 @@ function createBuildInfo() {
 }
 
 module.exports = {
-  entry: { verify: './verify.js' },
+  entry: {
+    index: './webpack/index.js',
+    verify: './webpack/verify.js',
+    about: './webpack/about.js'
+  },
   output: {
     path: distPath,
     filename: '[name].js',
@@ -51,18 +57,31 @@ module.exports = {
   experiments: {
     asyncWebAssembly: true
   },
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader']
+      }
+    ]
+  },
   optimization: {
     splitChunks: {
-      chunks: 'async',
+      chunks: 'all',
       cacheGroups: {
-        vendors: false // disable splitting the main chunk into 3rd-party and built-in parts
+        vendors: false, // disable splitting the main chunk into 3rd-party and built-in parts
+        commons: {
+          name: 'commons',
+          chunks: 'initial',
+          minChunks: 2
+        }
       }
     }
   },
   plugins: [
+    new MiniCssExtractPlugin(),
     new CopyWebpackPlugin({
       patterns: [
-        { from: './static', to: distPath },
         {
           from: './templates/*.pug',
           globOptions: { ignore: ['**/_*.pug'] },

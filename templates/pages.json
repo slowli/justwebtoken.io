@@ -6,8 +6,7 @@
   "verify": {
     "title": "JWT verification",
     "navTitle": "Verify",
-    "description": "Simple tool to verify JSON web tokens.",
-    "scripts": ["self", "bootstrap", "jquery"]
+    "description": "Simple tool to verify JSON web tokens."
   },
   "claims": {
     "title": "Claims",
