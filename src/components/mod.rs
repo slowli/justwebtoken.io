@@ -28,10 +28,76 @@ enum TokenResult {
     Ok(Box<GenericToken>),
     Err {
         /// Error verifying the token.
-        err: ValidationError,
+        err: ExtendedValidationError,
         /// Claims that could be recovered from the token.
         claims: Option<GenericClaims>,
     },
+}
+
+#[derive(Debug)]
+enum ExtendedValidationError {
+    Err(ValidationError),
+    NoKey,
+}
+
+impl From<ValidationError> for ExtendedValidationError {
+    fn from(err: ValidationError) -> Self {
+        Self::Err(err)
+    }
+}
+
+impl ExtendedValidationError {
+    fn view_err(err: &ValidationError) -> Html {
+        let tip = match err {
+            ValidationError::InvalidSignature | ValidationError::AlgorithmMismatch { .. } => Some(
+                "Check that the key is appropriate for token verification. \
+                 If the token provides <code>kid</code> header, it can be used to identify \
+                 the key, especially if <code>kid</code> it is a key thumbprint.",
+            ),
+            ValidationError::MalformedSignature(_) => {
+                Some("Check that the token is pasted fully into the corresponding input.")
+            }
+            ValidationError::MalformedClaims(_) => {
+                Some("Check that the token is correctly pasted into the corresponding input.")
+            }
+            _ => None,
+        };
+
+        html! {
+            <div class="alert alert-danger" role="alert">
+                <h4 class="alert-heading">{ "Error verifying token" }</h4>
+                <p>{ err }</p>
+                { if let Some(tip) = tip {
+                    html! {
+                        <>
+                            <hr/>
+                            <p class="mb-0 small">{ str_to_html(tip) }</p>
+                        </>
+                    }
+                } else {
+                    html! {}
+                }}
+            </div>
+        }
+    }
+
+    fn view_no_key_warning() -> Html {
+        html! {
+            <div class="alert alert-warning" role="alert">
+                <p class="mb-0">
+                    { "Since no verifying key is provided, it is impossible \
+                       to verify token integrity." }
+                </p>
+            </div>
+        }
+    }
+
+    fn view(&self) -> Html {
+        match self {
+            Self::Err(err) => Self::view_err(err),
+            Self::NoKey => Self::view_no_key_warning(),
+        }
+    }
 }
 
 #[derive(Debug)]
@@ -53,17 +119,23 @@ impl Default for AppState {
 
 impl AppState {
     fn update(&mut self) {
-        let key = if let Some(key) = &self.key {
-            key
+        let token = if let Some(token) = &self.token {
+            token
         } else {
             self.result = TokenResult::None;
             return;
         };
 
-        let token = if let Some(token) = &self.token {
-            token
+        let key = if let Some(key) = &self.key {
+            key
         } else {
-            self.result = TokenResult::None;
+            let claims = token
+                .deserialize_claims_unchecked::<serde_json::Value>()
+                .ok();
+            self.result = TokenResult::Err {
+                err: ExtendedValidationError::NoKey,
+                claims,
+            };
             return;
         };
 
@@ -78,7 +150,10 @@ impl AppState {
                         .deserialize_claims_unchecked::<serde_json::Value>()
                         .ok()
                 };
-                TokenResult::Err { err, claims }
+                TokenResult::Err {
+                    err: err.into(),
+                    claims,
+                }
             }
         };
     }
@@ -107,7 +182,7 @@ pub struct App {
 }
 
 impl App {
-    fn view_claims(claims: &GenericClaims, err: Option<&ValidationError>) -> Html {
+    fn view_claims(claims: &GenericClaims, err: Option<&ExtendedValidationError>) -> Html {
         html! {
             <>
                 <div class="d-flex flex-row mb-3">
@@ -115,7 +190,7 @@ impl App {
                     { Self::view_claims_nav() }
                 </div>
                 { if let Some(err) = err {
-                    Self::view_err(err)
+                    err.view()
                 } else {
                     html! {}
                 }}
@@ -230,40 +305,6 @@ impl App {
         }
     }
 
-    fn view_err(err: &ValidationError) -> Html {
-        let tip = match err {
-            ValidationError::InvalidSignature | ValidationError::AlgorithmMismatch { .. } => Some(
-                "Check that the key is appropriate for token verification. \
-                 If the token provides <code>kid</code> header, it can be used to identify \
-                 the key, especially if <code>kid</code> it is a key thumbprint.",
-            ),
-            ValidationError::MalformedSignature(_) => {
-                Some("Check that the token is pasted fully into the corresponding input.")
-            }
-            ValidationError::MalformedClaims(_) => {
-                Some("Check that the token is correctly pasted into the corresponding input.")
-            }
-            _ => None,
-        };
-
-        html! {
-            <div class="alert alert-danger" role="alert">
-                <h4 class="alert-heading">{ "Error verifying token" }</h4>
-                <p>{ err }</p>
-                { if let Some(tip) = tip {
-                    html! {
-                        <>
-                            <hr/>
-                            <p class="mb-0 small">{ str_to_html(tip) }</p>
-                        </>
-                    }
-                } else {
-                    html! {}
-                }}
-            </div>
-        }
-    }
-
     fn view_custom_claim(field_name: &str, value: &serde_json::Value) -> Html {
         let value_str = serde_json::to_string(value).unwrap();
         if let Some(claim) = StandardClaim::get(field_name) {
@@ -328,7 +369,7 @@ impl Component for App {
                     TokenResult::Ok(token) => Self::view_claims(token.claims(), None),
                     TokenResult::Err { err, claims: Some(claims) } =>
                         Self::view_claims(claims, Some(err)),
-                    TokenResult::Err { err, claims: None } => Self::view_err(err),
+                    TokenResult::Err { err, claims: None } => err.view(),
                     TokenResult::None => Self::view_no_inputs_hint(),
                 }}
             </>

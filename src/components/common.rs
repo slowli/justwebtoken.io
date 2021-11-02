@@ -66,7 +66,7 @@ impl FieldWithValue {
         view_data_row(
             html! {
                 <>
-                    <label>{ field.name }</label>
+                    <label><strong>{ field.name }</strong></label>
                     { " – " }
                     <abbr title="Name of the claim field in claims object">
                         { original_name }

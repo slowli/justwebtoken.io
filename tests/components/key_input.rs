@@ -1,5 +1,7 @@
 //! Tests for `<KeyInput />` component.
 
+// TODO: test key usage warning
+
 use assert_matches::assert_matches;
 use wasm_bindgen_test::*;
 use yew::{web_sys::Element, Callback};

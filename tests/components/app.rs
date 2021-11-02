@@ -1,5 +1,7 @@
 //! Tests for the root component.
 
+// TODO: test token + no key
+
 use jwt_compact::{alg::SecretBytes, UntrustedToken};
 use wasm_bindgen_test::*;
 use yew::web_sys::Element;
