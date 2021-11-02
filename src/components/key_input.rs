@@ -91,7 +91,7 @@ impl ParsedKey {
 
     fn view(&self) -> Html {
         let should_warn =
-            self.is_signing_key /*&& !matches!(self.key_type, ExtendedKeyType::Symmetric { .. })*/;
+            self.is_signing_key && !matches!(self.key_type, ExtendedKeyType::Symmetric { .. });
         let thumbprint = Base64UrlUnpadded::encode_string(&self.sha256_thumbprint);
         html! {
             <>
@@ -109,10 +109,12 @@ impl ParsedKey {
     fn view_signing_key_warning() -> Html {
         let usage = html! {
             <>
-                <span class="badge bg-warning text-dark" title="Potentially incorrect key usage!">
+                <span
+                    class="badge bg-warning text-dark me-2"
+                    title="Potentially incorrect key usage!">
                     { Icon::Warning.to_html() }{ " signing" }
                 </span>
-                <span class="badge bg-secondary">{ "verification" }</span>
+                <span class="badge bg-secondary me-2">{ "verification" }</span>
             </>
         };
         Self::KEY_USAGE_FIELD.with_html_value(usage).view_aux()

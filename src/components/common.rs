@@ -60,6 +60,34 @@ impl FieldWithValue {
             </>
         }
     }
+
+    pub fn view_as_claim(self, original_name: &str) -> Html {
+        let field = &self.field;
+        view_data_row(
+            html! {
+                <>
+                    <label>{ field.name }</label>
+                    { " – " }
+                    <abbr title="Name of the claim field in claims object">
+                        { original_name }
+                    </abbr>
+                    { if let Some(link) = field.link {
+                        Self::view_link(link)
+                    } else {
+                        html!{}
+                    }}
+                </>
+            },
+            html! {
+                <>
+                    <div class="mb-0">{ self.value }</div>
+                    <div class="text-muted small toggled-description">
+                        { str_to_html(field.description) }
+                    </div>
+                </>
+            },
+        )
+    }
 }
 
 pub fn str_to_html(html_str: &str) -> Html {

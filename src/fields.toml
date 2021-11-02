@@ -1,8 +1,11 @@
+# Standard JWT headers.
 [standard_headers.jku]
 name = "Key set URL"
 link = "https://datatracker.ietf.org/doc/html/rfc7515#section-4.1.2"
-# FIXME: link to JWKS definition
-description = "URL of the JSON Web Key Set containing the key that has signed the token."
+description = """\
+URL of the <a href="https://www.rfc-editor.org/rfc/rfc7517.html#section-5">JSON Web Key Set</a> \
+containing the key that has signed the token.\
+"""
 
 [standard_headers.kid]
 name = "Key ID"

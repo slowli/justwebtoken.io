@@ -206,25 +206,7 @@ impl App {
         } else {
             html! { { value } }
         };
-
-        let label = html! {
-            <>
-                <label>{ claim.name }</label>
-                { " " }
-                <span
-                    class="badge bg-info text-dark"
-                    title="Name of the claim field in claims object">
-                    { field_name }
-                </span>
-            </>
-        };
-        let value = html! {
-            <>
-                <div class="mb-0">{ value }</div>
-                <div class="text-muted small toggled-description"> { claim.description }</div>
-            </>
-        };
-        view_data_row(label, value)
+        claim.with_html_value(value).view_as_claim(field_name)
     }
 
     fn view_unknown_claim(field_name: &str, value: &str) -> Html {
