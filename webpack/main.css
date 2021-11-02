@@ -62,3 +62,9 @@ textarea.form-control.small {
 .toggled-description-hide .toggled-description {
   display: none;
 }
+
+@media (max-width: 575.98px) {
+  .anchor-fix-sm {
+    padding-left: calc(var(--bs-gutter-x) * .5 + 1rem);
+  }
+}

@@ -7,8 +7,13 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
 
+function requireToml(path) {
+  return toml.parse(fs.readFileSync(path, { encoding: 'utf-8' }));
+}
+
 const pages = require('./templates/pages.json');
-const cargoLockfile = toml.parse(fs.readFileSync('./Cargo.lock', { encoding: 'utf-8' }));
+const standardFields = requireToml('./src/fields.toml');
+const cargoLockfile = requireToml('./Cargo.lock');
 const distPath = path.resolve(__dirname, 'dist');
 
 const buildInfo = createBuildInfo();
@@ -45,7 +50,8 @@ function createBuildInfo() {
 const entry = {
   index: './webpack/index.js',
   verify: './webpack/verify.js',
-  about: './webpack/about.js'
+  claims: './webpack/claims.js',
+  about: './webpack/about.js',
 };
 
 const htmlPlugins = Object.keys(entry).map((entry) => {
@@ -53,7 +59,11 @@ const htmlPlugins = Object.keys(entry).map((entry) => {
     filename: entry === 'index' ? 'index.html' : `${entry}/index.html`,
     chunks: [entry, 'commons'],
     template: `templates/${entry}.pug`,
-    templateParameters: { $pages: pages, $buildInfo: buildInfo }
+    templateParameters: {
+      $pages: pages,
+      $standardFields: standardFields,
+      $buildInfo: buildInfo,
+    },
   });
 });
 

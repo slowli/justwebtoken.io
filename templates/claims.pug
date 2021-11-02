@@ -1,0 +1,39 @@
+extends _layout
+
+block pageInit
+  -
+    entryPoint = 'claims';
+    basePath = '..';
+    pages = $pages;
+    const claims = $standardFields.standard_claims;
+
+block main
+  p.lead.mb-4.
+    Claims used in JSON web tokens are standardized in various normative documents.
+    The dictionary below lists some of these registered claims; see <a href="https://www.iana.org/assignments/jwt/jwt.xhtml">IANA</a>
+    for a complete list.
+
+  h3 Basic claims
+
+  p.
+    Claims from the <a href="https://www.rfc-editor.org/rfc/rfc7519.html">JWT RFC</a> document.
+
+  each claim, originalName in claims
+    div.row.mb-2
+      div(id=`claim-${originalName}`).col-md-4.col-lg-3.anchor-fix-sm
+        label: strong= claim.name
+        |
+        | –
+        |
+        abbr(title='Name of the claim field in claims object')= originalName
+        if claim.link !== undefined
+          |
+          |
+          a(href=claim.link, title='View field definition').text-decoration-none
+            i.bi.bi-book
+      div.col-md-8.col-lg-9
+        p.mb-1 !{claim.description}
+        if claim.format !== undefined
+          div.text-muted.small
+            span(class='text-decoration-underline') Format
+            | : !{claim.format}

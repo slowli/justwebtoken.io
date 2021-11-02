@@ -13,7 +13,7 @@ pub enum Icon {
 impl Icon {
     fn icon_class(self) -> &'static str {
         match self {
-            Self::Link => "bi-link-45deg",
+            Self::Link => "bi-book",
             Self::Warning => "bi-exclamation-diamond",
         }
     }

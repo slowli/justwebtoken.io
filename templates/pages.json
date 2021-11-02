@@ -9,7 +9,7 @@
     "description": "Simple tool to verify JSON web tokens."
   },
   "claims": {
-    "title": "Claims",
+    "title": "Claims vocabulary",
     "navTitle": "Claims",
     "description": "Vocabulary of common JSON web token claims."
   },

@@ -1,4 +1,4 @@
-import /* webpackChunkName: "common" */ './common';
+import './common';
 import(/* webpackChunkName: "bundle" */ "../pkg").then(module => module.run_app());
 
 document.addEventListener('load', () => {
