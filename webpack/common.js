@@ -2,14 +2,14 @@
  * Common styles / scripts included into every page.
  */
 
-// TODO: extract only necessary icons
-import 'bootstrap-icons/font/bootstrap-icons.css';
-import './main.css';
+import './main.scss';
+import './icons/bootstrap-icons.scss';
 
+import 'bootstrap/js/dist/collapse';
 import 'bootstrap/js/dist/tab';
 import AnchorJS from 'anchor-js';
 
-document.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', () => {
   const anchors = new AnchorJS();
   anchors.options = {
     visible: 'touch',

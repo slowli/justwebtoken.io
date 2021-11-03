@@ -6,6 +6,7 @@ const toml = require('toml');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
+const AutoprefixerPlugin = require('autoprefixer');
 
 function requireToml(path) {
   return toml.parse(fs.readFileSync(path, { encoding: 'utf-8' }));
@@ -82,6 +83,22 @@ module.exports = {
       {
         test: /\.css$/i,
         use: [MiniCssExtractPlugin.loader, 'css-loader']
+      },
+      {
+        test: /\.scss$/i,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [AutoprefixerPlugin]
+              }
+            }
+          },
+          'sass-loader'
+        ]
       },
       {
         test: /\.pug$/i,

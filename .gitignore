@@ -11,3 +11,4 @@ npm-debug.log
 # Build artifacts
 /pkg
 /dist
+/webpack/icons

@@ -1,0 +1,80 @@
+@use "sass:color";
+
+// Override Bootstrap vars (needs to happen before the main SCSS is loaded).
+$primary: #6f42c1;
+
+@import "~bootstrap/scss/bootstrap";
+
+textarea.form-control {
+  resize: none;
+  height: 80px;
+
+  &.small {
+    font-size: .875rem !important;
+  }
+}
+
+.text-break-all {
+  word-break: break-all !important;
+}
+
+.body-header {
+  padding: 1.5rem 1rem 0;
+  color: var(--bs-white);
+  background-color: color.scale($primary, $lightness: -20%);
+  margin-bottom: 2rem;
+
+  h1 a, h1 a:hover {
+    color: inherit !important;
+    text-decoration: none !important;
+  }
+
+  .nav-item {
+    border-bottom: 2px solid transparent;
+
+    &.active {
+      border-bottom: 2px solid;
+    }
+  }
+}
+
+.content {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+.page-footer {
+  margin: 4rem -0.5rem 0 -0.5rem;
+  padding: 2rem 0.5rem 1.5rem;
+  border-top: 1px solid rgba(0,0,0,0.15);
+}
+
+.code-snippet {
+  padding: 1rem 1.5rem;
+  background-color: color.mix($gray-100, $gray-200);
+
+  pre {
+    margin-bottom: 0 !important;
+  }
+}
+.code-snippet-panel {
+  float: right;
+  position: relative;
+
+  & > .btn {
+    position: absolute;
+    right: 0;
+    top: 0;
+    z-index: 10;
+  }
+}
+
+.toggled-description-hide .toggled-description {
+  display: none;
+}
+
+@include media-breakpoint-down(sm) {
+  .anchor-fix-sm {
+    padding-left: calc(var(--bs-gutter-x) * .5 + 1rem);
+  }
+}

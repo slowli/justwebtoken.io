@@ -1,7 +1,7 @@
 import './common';
 import(/* webpackChunkName: "bundle" */ "../pkg").then(module => module.run_app());
 
-document.addEventListener('load', () => {
+window.addEventListener('DOMContentLoaded', () => {
   const descriptionToggle = document.getElementById('toggle-descriptions');
   const rootContainer = document.getElementById('app-root');
 

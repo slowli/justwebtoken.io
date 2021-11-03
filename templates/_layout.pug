@@ -30,7 +30,7 @@ block body
               -
                 const [pageName, { navTitle, title }] = page
               li.nav-item(title=title, class={ active: entryPoint === pageName })
-                a.nav-link(href=`${basePath}/${pageName}/`) #{navTitle}
+                a.nav-link(href=`${basePath}/${pageName}/`, class={ active: entryPoint === pageName })= navTitle
 
   .container.pt-4
     main
