@@ -24,6 +24,9 @@ pub enum KeyInstance {
 }
 
 impl KeyInstance {
+    /// # Errors
+    ///
+    /// Returns an error if `jwk` is incorrect or not supported.
     pub fn new(jwk: &JsonWebKey<'_>) -> Result<Self, JwkError> {
         match jwk {
             JsonWebKey::Symmetric { secret } => {
@@ -37,6 +40,10 @@ impl KeyInstance {
         }
     }
 
+    /// # Errors
+    ///
+    /// Returns an error if the token is not valid. This includes cases when the token has
+    /// an algorithm incompatible with this key.
     pub fn verify_token(
         &self,
         token: &UntrustedToken<'_>,

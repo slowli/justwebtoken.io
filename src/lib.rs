@@ -1,4 +1,12 @@
 #![recursion_limit = "512"]
+// Linter settings.
+#![warn(missing_debug_implementations, bare_trait_objects)]
+#![warn(clippy::all, clippy::pedantic)]
+#![allow(
+    clippy::non_ascii_literal,
+    clippy::module_name_repetitions,
+    clippy::must_use_candidate
+)]
 
 use wasm_bindgen::prelude::*;
 use yew::utils::document;
@@ -10,7 +18,7 @@ pub mod key_instance;
 use crate::components::App;
 
 #[wasm_bindgen]
-pub fn run_app() -> Result<(), JsValue> {
+pub fn run_app() {
     yew::initialize();
     let element = document()
         .query_selector("#app-root")
@@ -18,6 +26,4 @@ pub fn run_app() -> Result<(), JsValue> {
         .expect("cannot unwrap body node");
     yew::App::<App>::new().mount(element);
     yew::run_loop();
-
-    Ok(())
 }

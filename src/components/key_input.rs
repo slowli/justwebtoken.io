@@ -205,10 +205,9 @@ impl Component for KeyInput {
     type Properties = KeyInputProperties;
 
     fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
-        let state = KeyInputState::default();
         Self {
-            state,
             link,
+            state: KeyInputState::default(),
             properties,
         }
     }

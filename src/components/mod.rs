@@ -307,11 +307,10 @@ impl App {
 
     fn view_custom_claim(field_name: &str, value: &serde_json::Value) -> Html {
         let value_str = serde_json::to_string(value).unwrap();
-        if let Some(claim) = StandardClaim::get(field_name) {
-            Self::view_claim(field_name, claim, &value_str, true)
-        } else {
-            Self::view_unknown_claim(field_name, &value_str)
-        }
+        StandardClaim::get(field_name).map_or_else(
+            || Self::view_unknown_claim(field_name, &value_str),
+            |claim| Self::view_claim(field_name, claim, &value_str, true),
+        )
     }
 
     fn view_no_inputs_hint() -> Html {
