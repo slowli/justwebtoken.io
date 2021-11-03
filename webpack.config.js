@@ -12,7 +12,7 @@ function requireToml(path) {
   return toml.parse(fs.readFileSync(path, { encoding: 'utf-8' }));
 }
 
-const pages = require('./templates/pages.json');
+const pages = require('./webpack/pages.json');
 const standardFields = requireToml('./src/fields.toml');
 const cargoLockfile = requireToml('./Cargo.lock');
 const distPath = path.resolve(__dirname, 'dist');
@@ -59,7 +59,7 @@ const htmlPlugins = Object.keys(entry).map((entry) => {
   return new HtmlWebpackPlugin({
     filename: entry === 'index' ? 'index.html' : `${entry}/index.html`,
     chunks: [entry, 'commons'],
-    template: `templates/${entry}.pug`,
+    template: `webpack/templates/${entry}.pug`,
     templateParameters: {
       $pages: pages,
       $standardFields: standardFields,
