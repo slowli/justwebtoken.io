@@ -7,7 +7,9 @@
     "build": "rimraf dist && webpack --mode production",
     "build:font": "node webpack/scripts/build-font.js",
     "start": "webpack-dev-server --mode development",
-    "test": "wasm-pack test --headless"
+    "test": "wasm-pack test --headless",
+    "lint:fmt": "cargo fmt --all -- --check",
+    "lint:clippy": "cargo clippy --workspace -- -D warnings"
   },
   "repository": {
     "type": "git",
