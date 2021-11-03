@@ -2,6 +2,8 @@
  * Generates an icon font using a subset of Bootstrap Icons.
  */
 
+/* eslint-disable no-console */
+
 const fs = require('fs/promises');
 const path = require('path');
 const { generateFonts } = require('fantasticon');
@@ -9,7 +11,7 @@ const { generateFonts } = require('fantasticon');
 // All icons used by the application.
 const icons = [
   'book',
-  'exclamation-diamond'
+  'exclamation-diamond',
 ];
 
 const iconsDir = path.resolve(__dirname, '../icons');
@@ -36,7 +38,7 @@ async function main() {
     fontTypes: ['woff', 'woff2'],
     assetTypes: ['scss'],
     tag: 'i',
-    prefix: 'bi'
+    prefix: 'bi',
   });
 
   console.log('Icon font generated!');

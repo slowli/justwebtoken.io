@@ -1,5 +1,6 @@
 import './common';
-import(/* webpackChunkName: "bundle" */ "../pkg").then(module => module.run_app());
+
+import(/* webpackChunkName: "bundle" */ '../pkg').then((module) => module.run_app());
 
 window.addEventListener('DOMContentLoaded', () => {
   const descriptionToggle = document.getElementById('toggle-descriptions');

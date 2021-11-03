@@ -8,6 +8,7 @@
     "build:font": "node webpack/scripts/build-font.js",
     "start": "webpack-dev-server --mode development",
     "test": "wasm-pack test --headless",
+    "lint:js": "eslint webpack webpack.config.js",
     "lint:fmt": "cargo fmt --all -- --check",
     "lint:clippy": "cargo clippy --workspace -- -D warnings"
   },
@@ -26,6 +27,8 @@
     "autoprefixer": "^10.4.0",
     "copy-webpack-plugin": "^9.0.1",
     "css-loader": "^6.5.0",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
     "fantasticon": "^1.2.3",
     "html-webpack-plugin": "^5.5.0",
     "mini-css-extract-plugin": "^2.4.3",

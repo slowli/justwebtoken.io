@@ -14,7 +14,7 @@ window.addEventListener('DOMContentLoaded', () => {
   anchors.options = {
     visible: 'touch',
     icon: '§',
-    titleText: 'Link to this section'
+    titleText: 'Link to this section',
   };
   anchors.add('main h2, main h3');
 });

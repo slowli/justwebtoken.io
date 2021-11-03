@@ -12,7 +12,7 @@ document.addEventListener('DOMContentLoaded', () => {
     placement: 'left',
     icon: '¶',
     class: 'link-secondary',
-    titleText: 'Link to this claim'
+    titleText: 'Link to this claim',
   };
   anchors.add('div[id^=claim-]');
 });
