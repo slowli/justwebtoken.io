@@ -185,15 +185,15 @@ impl App {
     fn view_claims(claims: &GenericClaims, err: Option<&ExtendedValidationError>) -> Html {
         html! {
             <>
-                <div class="d-flex flex-row mb-3">
-                    <h3 id="claims" class="mb-0 me-5">{ "Claims" }</h3>
-                    { Self::view_claims_nav() }
-                </div>
                 { if let Some(err) = err {
                     err.view()
                 } else {
                     html! {}
                 }}
+                <div class="d-flex flex-row mb-3">
+                    <h3 id="claims" class="mb-0 me-5">{ "Claims" }</h3>
+                    { Self::view_claims_nav() }
+                </div>
                 <div class="tab-content">
                     <div
                         class="tab-pane fade show active"

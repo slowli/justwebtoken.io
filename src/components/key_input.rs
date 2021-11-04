@@ -244,7 +244,7 @@ impl Component for KeyInput {
         let row = view_data_row(
             html! {
                 <label for="key" class="col-form-label">
-                    <strong>{ "Verification key" }</strong>
+                    <strong>{ "Verifying key" }</strong>
                 </label>
             },
             html! {
@@ -264,6 +264,12 @@ impl Component for KeyInput {
                     } else {
                         html!{}
                     }}
+
+                    <div class="form-text">
+                        { "A key should be provided in the " }
+                        <a href="https://www.rfc-editor.org/rfc/rfc7517.html">{ "JSON Web Key" }</a>
+                        { " format, that is, as a JSON object." }
+                    </div>
                 </>
             },
         );

@@ -5,6 +5,11 @@ $primary: #6f42c1;
 
 @import "~bootstrap/scss/bootstrap";
 
+// Fix vertical alignment of icons.
+i[class^="bi-"]:before, i[class*=" bi-"]:before {
+  vertical-align: -0.125em;
+}
+
 textarea.form-control {
   resize: none;
   height: 80px;
