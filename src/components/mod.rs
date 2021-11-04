@@ -10,7 +10,7 @@ pub mod key_input;
 pub mod token_input;
 
 use self::{
-    common::{str_to_html, view_data_row},
+    common::{str_to_html, view_data_row, Alert},
     key_input::KeyInput,
     token_input::TokenInput,
 };
@@ -63,33 +63,34 @@ impl ExtendedValidationError {
             _ => None,
         };
 
-        html! {
-            <div class="alert alert-danger" role="alert">
-                <h4 class="alert-heading">{ "Error verifying token" }</h4>
-                <p>{ err }</p>
-                { if let Some(tip) = tip {
-                    html! {
-                        <>
-                            <hr/>
-                            <p class="mb-0 small">{ str_to_html(tip) }</p>
-                        </>
-                    }
-                } else {
-                    html! {}
-                }}
-            </div>
-        }
+        Alert::Danger.view(
+            "Error verifying token",
+            html! {
+                <>
+                    <p class="card-text">{ err }</p>
+                    { if let Some(tip) = tip {
+                        html! {
+                            <p class="card-text text-muted">
+                                <small>{ str_to_html(tip) }</small>
+                            </p>
+                        }
+                    } else {
+                        html! {}
+                    }}
+                </>
+            },
+        )
     }
 
     fn view_no_key_warning() -> Html {
-        html! {
-            <div class="alert alert-warning" role="alert">
-                <p class="mb-0">
-                    { "Since no verifying key is provided, it is impossible \
-                       to verify token integrity." }
+        Alert::Warning.view(
+            "Cannot verify integrity",
+            html! {
+                <p class="card-text">
+                    { "…since no valid verifying key is provided." }
                 </p>
-            </div>
-        }
+            },
+        )
     }
 
     fn view(&self) -> Html {
@@ -318,14 +319,23 @@ impl App {
     }
 
     fn view_no_inputs_hint() -> Html {
-        html! {
-            <div class="alert alert-info" role="alert">
-                <h4>{ "No key / token" }</h4>
-                <p class="mb-0">
-                    { "Provide valid key and token in the inputs above to start verification." }
-                </p>
-            </div>
-        }
+        Alert::Info.view(
+            "No key / token",
+            html! {
+                <>
+                    <p class="card-text">
+                        { "Provide valid key and token in the inputs above to \
+                           start verification." }
+                    </p>
+                    <button
+                        type="button"
+                        class="btn btn-info"
+                        title="This will also generate a symmetric verifying key">
+                        { "Generate random token" }
+                    </button>
+                </>
+            },
+        )
     }
 }
 

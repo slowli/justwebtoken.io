@@ -33,9 +33,9 @@ fn info_alert_is_displayed_by_default() {
     let rig = TestRig::new(());
 
     assert_no_child(&rig.root_element, "#decoded-claims");
-    assert_no_child(&rig.root_element, ".alert.alert-danger");
+    assert_no_child(&rig.root_element, ".card-alert.border-danger");
 
-    let alert = select_single_element(&rig.root_element, ".alert.alert-info");
+    let alert = select_single_element(&rig.root_element, ".card-alert.border-info");
     let alert_text = alert.text_content().unwrap();
     assert!(alert_text.contains("No key / token"), "{}", alert_text);
 }
@@ -67,7 +67,7 @@ fn error_is_displayed_for_incorrect_key_type() {
     rig.component
         .send_message(AppMessage::new_token(Some(token)));
 
-    let alert = select_single_element(&rig.root_element, ".alert.alert-danger");
+    let alert = select_single_element(&rig.root_element, ".card-alert.border-danger");
     let alert_text = alert.text_content().unwrap();
     assert!(
         alert_text.contains("Error verifying token"),

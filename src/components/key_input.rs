@@ -112,7 +112,7 @@ impl ParsedKey {
                 <span
                     class="badge bg-warning text-dark me-2"
                     title="Potentially incorrect key usage!">
-                    { Icon::Warning.to_html() }{ " signing" }
+                    { Icon::Warning.view() }{ " signing" }
                 </span>
                 <span class="badge bg-secondary me-2">{ "verification" }</span>
             </>

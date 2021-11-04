@@ -14,8 +14,8 @@ use yew::utils::document;
 // Modules are public for the sake of integration testing.
 pub mod components;
 mod fields;
-mod rng;
 pub mod key_instance;
+mod rng;
 
 use crate::components::App;
 

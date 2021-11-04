@@ -82,7 +82,7 @@ fn incorrect_key_serialization() {
     let rows = rig.rows();
     assert!(!rows.contains_key("Type"), "{:?}", rows);
 
-    let feedback = extract_feedback(&rows["Verification key"]);
+    let feedback = extract_feedback(&rows["Verifying key"]);
     assert!(feedback.contains("expected value"), "{}", feedback);
 }
 
@@ -103,7 +103,7 @@ fn unsupported_key_type() {
     assert_eq!(key_type, "Elliptic curve (secp256r1)");
     assert!(rows.contains_key("Thumbprint (SHA-256)"));
 
-    let feedback = extract_feedback(&rows["Verification key"]);
+    let feedback = extract_feedback(&rows["Verifying key"]);
     assert!(
         feedback.contains("`crv` has unexpected value"),
         "{}",

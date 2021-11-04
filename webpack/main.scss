@@ -74,6 +74,15 @@ textarea.form-control {
   }
 }
 
+.card-alert .card-img-top {
+  height: 0;
+
+  & > span {
+    position: relative;
+    top: -0.75em;
+  }
+}
+
 .toggled-description-hide .toggled-description {
   display: none;
 }

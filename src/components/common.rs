@@ -8,6 +8,7 @@ use crate::fields::FieldWithValue;
 pub enum Icon {
     Link,
     Warning,
+    Info,
 }
 
 impl Icon {
@@ -15,10 +16,11 @@ impl Icon {
         match self {
             Self::Link => "bi-book",
             Self::Warning => "bi-exclamation-diamond",
+            Self::Info => "bi-info-circle",
         }
     }
 
-    pub fn to_html(self) -> Html {
+    pub fn view(self) -> Html {
         html! { <i class=classes!("bi", self.icon_class())></i> }
     }
 }
@@ -55,7 +57,7 @@ impl FieldWithValue {
                 <a href=link
                     class="text-decoration-none"
                     title="View field definition">
-                    { Icon::Link.to_html() }
+                    { Icon::Link.view() }
                 </a>
             </>
         }
@@ -102,5 +104,41 @@ pub fn view_data_row(label: Html, value: Html) -> Html {
             <div class="col-md-3">{ label }</div>
             <div class="col-md-9">{ value }</div>
         </div>
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub enum Alert {
+    Info,
+    Warning,
+    Danger,
+}
+
+impl Alert {
+    /// `body` should have card formatting (e.g., `card-text` class on top-level `p` tags).
+    pub fn view(self, title: &str, body: Html) -> Html {
+        let icon = match self {
+            Self::Info => Icon::Info,
+            Self::Warning | Self::Danger => Icon::Warning,
+        };
+        let (text_class, border_class) = match self {
+            Self::Info => ("text-info", "border-info"),
+            Self::Warning => ("text-warning", "border-warning"),
+            Self::Danger => ("text-danger", "border-danger"),
+        };
+
+        let top_img_classes = classes!["card-img-top", "fs-3", "text-center", text_class];
+
+        html! {
+            <div class=classes!["card", "card-alert", "my-4", border_class] role="alert">
+                <div class=top_img_classes>
+                    <span class="px-2 bg-white">{ icon.view() }</span>
+                </div>
+                <div class="card-body">
+                    <h5 class=classes!["card-title", text_class]>{ title }</h5>
+                    { body }
+                </div>
+            </div>
+        }
     }
 }
