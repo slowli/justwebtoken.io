@@ -11,7 +11,7 @@ use yew::{
 
 use std::fmt;
 
-use super::common::{view_data_row, Icon};
+use super::common::{view_data_row, ComponentRef, Icon};
 use crate::{fields::Field, key_instance::KeyInstance};
 
 /// Key type together with auxiliary information.
@@ -187,8 +187,10 @@ pub enum KeyInputMessage {
     SetKey(String),
 }
 
-#[derive(Debug, Clone, PartialEq, Properties)]
+#[derive(Debug, Clone, Default, PartialEq, Properties)]
 pub struct KeyInputProperties {
+    #[prop_or_default]
+    pub component_ref: ComponentRef<KeyInput>,
     #[prop_or_default]
     pub onchange: Callback<Option<KeyInstance>>,
 }
@@ -197,7 +199,7 @@ pub struct KeyInputProperties {
 pub struct KeyInput {
     link: ComponentLink<Self>,
     state: KeyInputState,
-    properties: KeyInputProperties,
+    onchange: Callback<Option<KeyInstance>>,
 }
 
 impl Component for KeyInput {
@@ -205,10 +207,11 @@ impl Component for KeyInput {
     type Properties = KeyInputProperties;
 
     fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
+        properties.component_ref.link_with(link.clone());
         Self {
             link,
             state: KeyInputState::default(),
-            properties,
+            onchange: properties.onchange,
         }
     }
 
@@ -217,14 +220,15 @@ impl Component for KeyInput {
             KeyInputMessage::SetKey(key) => {
                 let (new_state, maybe_key) = KeyInputState::new(key);
                 self.state = new_state;
-                self.properties.onchange.emit(maybe_key);
+                self.onchange.emit(maybe_key);
             }
         }
         true
     }
 
     fn change(&mut self, properties: Self::Properties) -> ShouldRender {
-        self.properties = properties;
+        properties.component_ref.link_with(self.link.clone());
+        self.onchange = properties.onchange;
         false
     }
 
@@ -253,6 +257,7 @@ impl Component for KeyInput {
                         id="key"
                         class=control_classes
                         placeholder="Encoded key"
+                        value=self.state.raw_key.clone()
                         oninput=self.link.callback(move |e: InputData| {
                             KeyInputMessage::SetKey(e.value)
                         }) >

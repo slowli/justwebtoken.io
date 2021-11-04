@@ -28,6 +28,7 @@ impl TestRig {
             onchange: Callback::from(move |key| {
                 *received_key_.borrow_mut() = key;
             }),
+            ..KeyInputProperties::default()
         };
 
         Self {

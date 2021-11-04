@@ -1,14 +1,17 @@
+use chrono::Duration;
 use ed25519_compact::PublicKey as Ed25519PublicKey;
+use getrandom::getrandom;
 use jwt_compact::{
     alg::{
         Ed25519, Es256k, Hs256, Hs256Key, Hs384, Hs384Key, Hs512, Hs512Key, Rsa, RsaPublicKey,
         SecretBytes,
     },
     jwk::{JsonWebKey, JwkError},
-    AlgorithmExt, Claims, Token, UntrustedToken, ValidationError,
+    AlgorithmExt, Claims, Header, TimeOptions, Token, UntrustedToken, ValidationError,
 };
 use k256::ecdsa::VerifyingKey as K256PublicKey;
 use sha2::Sha256;
+use uuid::Uuid;
 
 use std::convert::TryFrom;
 
@@ -40,6 +43,12 @@ impl KeyInstance {
         }
     }
 
+    pub fn random_key() -> Hs256Key {
+        let mut bytes = [0_u8; 64];
+        getrandom(&mut bytes).expect("Cannot access CSPRNG");
+        Hs256Key::new(bytes)
+    }
+
     /// # Errors
     ///
     /// Returns an error if the token is not valid. This includes cases when the token has
@@ -67,5 +76,37 @@ impl KeyInstance {
 
             Self::K256(key) => Es256k::<Sha256>::default().validate_integrity(token, key),
         }
+    }
+
+    pub fn random_token(key: &Hs256Key) -> String {
+        let header = Header::default()
+            .with_token_type("JWT")
+            .with_key_id(Self::random_uuid().to_string());
+
+        let claims = serde_json::json!({
+            "iss": "https://justwebtoken.io/",
+            "sub": Self::random_uuid().to_string(),
+            "jti": Self::random_uuid().to_string(),
+            "aud": ["https://justwebtoken.io/", "https://example.com"],
+        });
+        let claims = GenericClaims::new(claims)
+            .set_duration_and_issuance(&TimeOptions::default(), Duration::hours(1));
+
+        Hs256
+            .token(header, &claims, key)
+            .expect("Cannot create token")
+    }
+
+    // Copied verbatim from the `uuid` crate. Using `Uuid::new_v4()` from the crate requires
+    // enabling the `wasm-bindgen/js` feature, which we don't want to do
+    // (see the `rng` module` as to why).
+    fn random_uuid() -> Uuid {
+        let mut bytes = [0_u8; 16];
+        getrandom::getrandom(&mut bytes).expect("Cannot access CSPRNG");
+
+        uuid::Builder::from_bytes(bytes)
+            .set_variant(uuid::Variant::RFC4122)
+            .set_version(uuid::Version::Random)
+            .build()
     }
 }

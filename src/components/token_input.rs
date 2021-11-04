@@ -6,7 +6,7 @@ use yew::{
     classes, html, Callback, Component, ComponentLink, Html, InputData, Properties, ShouldRender,
 };
 
-use super::common::view_data_row;
+use super::common::{view_data_row, ComponentRef};
 use crate::fields::{Field, StandardHeader};
 
 #[derive(Debug)]
@@ -97,8 +97,10 @@ impl ParsedHeader {
 }
 
 /// Properties for the `TokenInput` component.
-#[derive(Debug, Clone, PartialEq, Properties)]
+#[derive(Debug, Clone, Default, PartialEq, Properties)]
 pub struct TokenInputProperties {
+    #[prop_or_default]
+    pub component_ref: ComponentRef<TokenInput>,
     #[prop_or_default]
     pub onchange: Callback<Option<UntrustedToken<'static>>>,
 }
@@ -107,7 +109,7 @@ pub struct TokenInputProperties {
 #[derive(Debug)]
 pub struct TokenInput {
     link: ComponentLink<Self>,
-    properties: TokenInputProperties,
+    onchange: Callback<Option<UntrustedToken<'static>>>,
     state: TokenInputState,
 }
 
@@ -121,9 +123,10 @@ impl Component for TokenInput {
     type Properties = TokenInputProperties;
 
     fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
+        properties.component_ref.link_with(link.clone());
         Self {
             link,
-            properties,
+            onchange: properties.onchange,
             state: TokenInputState::default(),
         }
     }
@@ -133,14 +136,15 @@ impl Component for TokenInput {
             TokenInputMessage::SetToken(token) => {
                 let (new_state, maybe_token) = TokenInputState::new(token);
                 self.state = new_state;
-                self.properties.onchange.emit(maybe_token);
+                self.onchange.emit(maybe_token);
             }
         }
         true
     }
 
     fn change(&mut self, properties: Self::Properties) -> ShouldRender {
-        self.properties = properties;
+        properties.component_ref.link_with(self.link.clone());
+        self.onchange = properties.onchange;
         false
     }
 
@@ -169,6 +173,7 @@ impl Component for TokenInput {
                         id="token"
                         class=control_classes
                         placeholder="JSON web token"
+                        value=self.state.raw_token.clone()
                         oninput=self.link.callback(move |e: InputData| {
                             TokenInputMessage::SetToken(e.value)
                         }) >

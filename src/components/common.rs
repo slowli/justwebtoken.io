@@ -1,6 +1,8 @@
 //! Common reused components.
 
-use yew::{classes, html, Html};
+use yew::{classes, html, Component, ComponentLink, Html};
+
+use std::{cell::RefCell, rc::Rc};
 
 use crate::fields::FieldWithValue;
 
@@ -139,6 +141,45 @@ impl Alert {
                     { body }
                 </div>
             </div>
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct ComponentRef<C: Component> {
+    link: Rc<RefCell<Option<ComponentLink<C>>>>,
+}
+
+impl<C: Component> Default for ComponentRef<C> {
+    fn default() -> Self {
+        Self {
+            link: Rc::new(RefCell::new(None)),
+        }
+    }
+}
+
+impl<C: Component> Clone for ComponentRef<C> {
+    fn clone(&self) -> Self {
+        Self {
+            link: Rc::clone(&self.link),
+        }
+    }
+}
+
+impl<C: Component> PartialEq for ComponentRef<C> {
+    fn eq(&self, other: &Self) -> bool {
+        Rc::ptr_eq(&self.link, &other.link)
+    }
+}
+
+impl<C: Component> ComponentRef<C> {
+    pub fn link_with(self, link: ComponentLink<C>) {
+        *self.link.borrow_mut() = Some(link);
+    }
+
+    pub fn send_message(&self, message: C::Message) {
+        if let Some(link) = self.link.borrow().as_ref() {
+            link.send_message(message);
         }
     }
 }

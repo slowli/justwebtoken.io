@@ -22,9 +22,10 @@ impl TestRig {
         let received_token = Rc::new(RefCell::new(None));
         let received_token_ = Rc::clone(&received_token);
         let props = TokenInputProperties {
-            onchange: Callback::from(move |key| {
-                *received_token_.borrow_mut() = key;
+            onchange: Callback::from(move |token| {
+                *received_token_.borrow_mut() = token;
             }),
+            ..TokenInputProperties::default()
         };
 
         Self {

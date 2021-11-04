@@ -1,6 +1,6 @@
 //! Application components.
 
-use jwt_compact::{UntrustedToken, ValidationError};
+use jwt_compact::{jwk::JsonWebKey, UntrustedToken, ValidationError};
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 use std::fmt;
@@ -10,9 +10,9 @@ pub mod key_input;
 pub mod token_input;
 
 use self::{
-    common::{str_to_html, view_data_row, Alert},
-    key_input::KeyInput,
-    token_input::TokenInput,
+    common::{str_to_html, view_data_row, Alert, ComponentRef},
+    key_input::{KeyInput, KeyInputMessage},
+    token_input::{TokenInput, TokenInputMessage},
 };
 use crate::{
     fields::StandardClaim,
@@ -164,6 +164,7 @@ impl AppState {
 pub enum AppMessage {
     SetKey(Option<Box<KeyInstance>>),
     SetToken(Option<Box<UntrustedToken<'static>>>),
+    RandomToken,
 }
 
 impl AppMessage {
@@ -179,6 +180,8 @@ impl AppMessage {
 #[derive(Debug)]
 pub struct App {
     link: ComponentLink<Self>,
+    key_input: ComponentRef<KeyInput>,
+    token_input: ComponentRef<TokenInput>,
     state: AppState,
 }
 
@@ -318,7 +321,7 @@ impl App {
         )
     }
 
-    fn view_no_inputs_hint() -> Html {
+    fn view_no_inputs_hint(&self) -> Html {
         Alert::Info.view(
             "No key / token",
             html! {
@@ -330,12 +333,22 @@ impl App {
                     <button
                         type="button"
                         class="btn btn-info"
-                        title="This will also generate a symmetric verifying key">
+                        title="This will also generate a symmetric verifying key"
+                        onclick=self.link.callback(|_| AppMessage::RandomToken)>
                         { "Generate random token" }
                     </button>
                 </>
             },
         )
+    }
+
+    fn generate_random_token(&self) {
+        let key = KeyInstance::random_key();
+        let token = KeyInstance::random_token(&key);
+        let jwk = serde_json::to_string(&JsonWebKey::from(&key)).expect("Cannot serialize key");
+        self.key_input.send_message(KeyInputMessage::SetKey(jwk));
+        self.token_input
+            .send_message(TokenInputMessage::SetToken(token));
     }
 }
 
@@ -346,6 +359,8 @@ impl Component for App {
     fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self {
             link,
+            key_input: ComponentRef::default(),
+            token_input: ComponentRef::default(),
             state: AppState::default(),
         }
     }
@@ -354,12 +369,16 @@ impl Component for App {
         match message {
             AppMessage::SetKey(key) => {
                 self.state.key = key.map(|boxed| *boxed);
+                self.state.update();
             }
             AppMessage::SetToken(token) => {
                 self.state.token = token.map(|boxed| *boxed);
+                self.state.update();
+            }
+            AppMessage::RandomToken => {
+                self.generate_random_token();
             }
         }
-        self.state.update();
         true
     }
 
@@ -373,9 +392,13 @@ impl Component for App {
                 <h3 id="inputs">{ "Inputs" }</h3>
                 <form class="mb-4">
                     <div class="mb-3">
-                        <KeyInput onchange=self.link.callback(AppMessage::new_key) />
+                        <KeyInput
+                            component_ref=self.key_input.clone()
+                            onchange=self.link.callback(AppMessage::new_key) />
                     </div>
-                    <TokenInput onchange=self.link.callback(AppMessage::new_token) />
+                    <TokenInput
+                        component_ref=self.token_input.clone()
+                        onchange=self.link.callback(AppMessage::new_token) />
                 </form>
 
                 { match &self.state.result {
@@ -383,7 +406,7 @@ impl Component for App {
                     TokenResult::Err { err, claims: Some(claims) } =>
                         Self::view_claims(claims, Some(err)),
                     TokenResult::Err { err, claims: None } => err.view(),
-                    TokenResult::None => Self::view_no_inputs_hint(),
+                    TokenResult::None => self.view_no_inputs_hint(),
                 }}
             </>
         }
