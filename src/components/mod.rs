@@ -334,7 +334,7 @@ impl App {
                         type="button"
                         class="btn btn-info"
                         title="This will also generate a symmetric verifying key"
-                        onclick=self.link.callback(|_| AppMessage::RandomToken)>
+                        onclick=self.link.callback(|_| AppMessage::RandomToken) >
                         { "Generate random token" }
                     </button>
                 </>
@@ -389,7 +389,6 @@ impl Component for App {
     fn view(&self) -> Html {
         html! {
             <>
-                <h3 id="inputs">{ "Inputs" }</h3>
                 <form class="mb-4">
                     <div class="mb-3">
                         <KeyInput

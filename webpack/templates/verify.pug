@@ -49,10 +49,35 @@ block main
 
   //- TODO: move settings to offcanvas?
   form.my-3
-    div.form-check.form-switch
-      input.form-check-input#toggle-descriptions(type='checkbox', role='switch', checked)
-      label.form-check-label(for='toggle-descriptions') Show extended descriptions for token and key properties
 
-  //- FIXME: add anchors on change
+
+  h3#inputs Inputs
+
+  div.mb-3
+    button#randomize-token.btn.btn-primary.me-2(type='button', title='Generate a random key and token')
+      i.bi.bi-dice-5
+      |
+      | Randomize
+    button.btn.btn-secondary(
+      type='button',
+      title='Open settings panel',
+      data-bs-toggle='offcanvas',
+      data-bs-target='#settings-offcanvas',
+      aria-controls='settings-offcanvas'
+    )
+      i.bi.bi-gear-fill
+      |
+      | Settings
+
+  div#settings-offcanvas.offcanvas.offcanvas-end(tabindex='-1', aria-labelledby='settings-offcanvas-label')
+    div.offcanvas-header
+      h4#settings-offcanvas-label.offcanvas-title Settings
+      button.btn-close.text-reset(type='button', data-bs-dismiss='offcanvas', aria-label='Close')
+    div.offcanvas-body
+      form
+        div.form-check.form-switch
+          input.form-check-input#toggle-descriptions(type='checkbox', role='switch', checked)
+          label.form-check-label(for='toggle-descriptions') Show extended descriptions for token and key properties
+
   div#app-root
     +loading

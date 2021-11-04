@@ -7,6 +7,7 @@ import './icons/bootstrap-icons.scss';
 
 import 'bootstrap/js/dist/collapse';
 import 'bootstrap/js/dist/tab';
+import 'bootstrap/js/dist/offcanvas';
 import AnchorJS from 'anchor-js';
 
 window.addEventListener('DOMContentLoaded', () => {

@@ -12,7 +12,9 @@ const { generateFonts } = require('fantasticon');
 const icons = [
   'book',
   'exclamation-diamond',
-  'info-circle'
+  'info-circle',
+  'dice-5',
+  'gear-fill',
 ];
 
 const iconsDir = path.resolve(__dirname, '../icons');
