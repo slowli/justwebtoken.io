@@ -296,11 +296,15 @@ impl App {
         html! {
             <div class="code-snippet">
                 <div class="code-snippet-panel">
-                    <button type="button" class="btn btn-sm btn-outline-primary">
+                    <button
+                        type="button"
+                        title="Copy raw claims to clipboard"
+                        data-clipboard-target="#raw-claims-content"
+                        class="btn btn-sm btn-outline-primary btn-copy">
                         { "Copy" }
                     </button>
                 </div>
-                <pre><code>{ &serialized }</code></pre>
+                <pre><code id="raw-claims-content">{ &serialized }</code></pre>
             </div>
         }
     }

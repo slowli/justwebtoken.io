@@ -1,3 +1,4 @@
+import ClipboardJS from 'clipboard';
 import './common';
 
 import(/* webpackChunkName: "bundle" */ '../pkg').then((module) => module.run_app());
@@ -5,6 +6,8 @@ import(/* webpackChunkName: "bundle" */ '../pkg').then((module) => module.run_ap
 window.addEventListener('DOMContentLoaded', () => {
   const descriptionToggle = document.getElementById('toggle-descriptions');
   const rootContainer = document.getElementById('app-root');
+
+  new ClipboardJS('.btn.btn-copy');
 
   descriptionToggle.addEventListener('change', () => {
     const isHidden = !descriptionToggle.checked;
