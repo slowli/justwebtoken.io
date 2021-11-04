@@ -1,6 +1,7 @@
 //! Tests for `<TokenInput />` component.
 
 use jwt_compact::UntrustedToken;
+use wasm_bindgen::UnwrapThrowExt;
 use wasm_bindgen_test::*;
 use yew::{web_sys::Element, Callback};
 
@@ -38,7 +39,7 @@ impl TestRig {
         self.received_token
             .borrow_mut()
             .take()
-            .expect("No token received")
+            .expect_throw("no token received")
     }
 
     fn assert_no_received_token(&self) {

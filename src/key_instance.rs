@@ -12,6 +12,7 @@ use jwt_compact::{
 use k256::ecdsa::VerifyingKey as K256PublicKey;
 use sha2::Sha256;
 use uuid::Uuid;
+use wasm_bindgen::UnwrapThrowExt;
 
 use std::convert::TryFrom;
 
@@ -45,7 +46,7 @@ impl KeyInstance {
 
     pub fn random_key() -> Hs256Key {
         let mut bytes = [0_u8; 64];
-        getrandom(&mut bytes).expect("Cannot access CSPRNG");
+        getrandom(&mut bytes).expect_throw("cannot access CSPRNG");
         Hs256Key::new(bytes)
     }
 
@@ -94,7 +95,7 @@ impl KeyInstance {
 
         Hs256
             .token(header, &claims, key)
-            .expect("Cannot create token")
+            .expect_throw("cannot create token")
     }
 
     // Copied verbatim from the `uuid` crate. Using `Uuid::new_v4()` from the crate requires
@@ -102,7 +103,7 @@ impl KeyInstance {
     // (see the `rng` module` as to why).
     fn random_uuid() -> Uuid {
         let mut bytes = [0_u8; 16];
-        getrandom::getrandom(&mut bytes).expect("Cannot access CSPRNG");
+        getrandom::getrandom(&mut bytes).expect_throw("cannot access CSPRNG");
 
         uuid::Builder::from_bytes(bytes)
             .set_variant(uuid::Variant::RFC4122)

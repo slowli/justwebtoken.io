@@ -6,7 +6,7 @@ use yew::{
     classes, html, Callback, Component, ComponentLink, Html, InputData, Properties, ShouldRender,
 };
 
-use super::common::{view_data_row, ComponentRef};
+use super::common::{view_data_row, ComponentRef, SavedStateManager};
 use crate::fields::{Field, StandardHeader};
 
 #[derive(Debug)]
@@ -103,14 +103,17 @@ pub struct TokenInputProperties {
     pub component_ref: ComponentRef<TokenInput>,
     #[prop_or_default]
     pub onchange: Callback<Option<UntrustedToken<'static>>>,
+    #[prop_or_default]
+    pub save: bool,
 }
 
 /// Token input + corresponding diagnostic information.
 #[derive(Debug)]
 pub struct TokenInput {
     link: ComponentLink<Self>,
-    onchange: Callback<Option<UntrustedToken<'static>>>,
     state: TokenInputState,
+    onchange: Callback<Option<UntrustedToken<'static>>>,
+    state_manager: SavedStateManager,
 }
 
 #[derive(Debug)]
@@ -124,16 +127,26 @@ impl Component for TokenInput {
 
     fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
         properties.component_ref.link_with(link.clone());
-        Self {
+
+        let (state_manager, init_state) =
+            SavedStateManager::new(Self::STORAGE_KEY, properties.save);
+
+        let mut this = Self {
             link,
-            onchange: properties.onchange,
             state: TokenInputState::default(),
+            onchange: properties.onchange,
+            state_manager,
+        };
+        if let Some(token) = init_state {
+            this.update(TokenInputMessage::SetToken(token));
         }
+        this
     }
 
     fn update(&mut self, message: Self::Message) -> ShouldRender {
         match message {
             TokenInputMessage::SetToken(token) => {
+                self.state_manager.save(&token);
                 let (new_state, maybe_token) = TokenInputState::new(token);
                 self.state = new_state;
                 self.onchange.emit(maybe_token);
@@ -145,6 +158,9 @@ impl Component for TokenInput {
     fn change(&mut self, properties: Self::Properties) -> ShouldRender {
         properties.component_ref.link_with(self.link.clone());
         self.onchange = properties.onchange;
+
+        self.state_manager.set_save_flag(properties.save);
+        self.state_manager.save(&self.state.raw_token);
         false
     }
 
@@ -203,6 +219,8 @@ impl Component for TokenInput {
 }
 
 impl TokenInput {
+    const STORAGE_KEY: &'static str = "jwt__rawToken";
+
     fn view_parse_err(err: &ParseError) -> Html {
         html! {
             <p class="invalid-feedback mb-1">{ "Error deserializing token: " }{ err }</p>

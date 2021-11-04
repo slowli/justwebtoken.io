@@ -1,7 +1,7 @@
 //! Tests related to components.
 
 use const_decoder::Decoder;
-use wasm_bindgen::JsCast;
+use wasm_bindgen::{JsCast, UnwrapThrowExt};
 use wasm_bindgen_test::wasm_bindgen_test_configure;
 use yew::{web_sys::Element, Component, ComponentLink};
 
@@ -95,7 +95,7 @@ fn select_single_element(root: &Element, selector: &str) -> Element {
 
 /// Extracts main value from a value column.
 fn extract_main_value(value_column: &Element) -> String {
-    let main_value_element = value_column.first_child().expect("no main value");
+    let main_value_element = value_column.first_child().expect_throw("no main value");
     main_value_element.text_content().unwrap()
 }
 
@@ -103,20 +103,23 @@ fn extract_main_value(value_column: &Element) -> String {
 fn extract_feedback(element: &Element) -> String {
     let feedback = element
         .query_selector(".invalid-feedback")
-        .unwrap()
-        .expect("no invalid feedback");
+        .unwrap_throw()
+        .expect_throw("no invalid feedback");
     feedback.text_content().unwrap()
 }
 
 fn extract_rows(element: &Element) -> HashMap<String, Element> {
     select_elements(element, ".row")
         .map(|row| {
-            let label = row.query_selector("label").unwrap().expect("no label");
-            let label = label.text_content().expect("no text in label");
-            let value = row.last_child().expect("no value column in row");
+            let label = row
+                .query_selector("label")
+                .unwrap_throw()
+                .expect_throw("no label");
+            let label = label.text_content().expect_throw("no text in label");
+            let value = row.last_child().expect_throw("no value column in row");
             let value = value
                 .dyn_into::<Element>()
-                .expect("value column is not an element");
+                .expect_throw("value column is not an element");
             (label, value)
         })
         .collect()

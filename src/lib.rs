@@ -38,8 +38,8 @@ pub fn run_app() -> AppLink {
     yew::initialize();
     let element = document()
         .query_selector("#app-root")
-        .expect("cannot get app root node")
-        .expect("cannot unwrap body node");
+        .expect_throw("cannot get app root node")
+        .expect_throw("cannot unwrap body node");
     let app = yew::App::<App>::new().mount(element);
     yew::run_loop();
     AppLink { inner: app }

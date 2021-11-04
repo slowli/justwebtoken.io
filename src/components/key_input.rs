@@ -11,7 +11,7 @@ use yew::{
 
 use std::fmt;
 
-use super::common::{view_data_row, ComponentRef, Icon};
+use super::common::{view_data_row, ComponentRef, Icon, SavedStateManager};
 use crate::{fields::Field, key_instance::KeyInstance};
 
 /// Key type together with auxiliary information.
@@ -193,6 +193,8 @@ pub struct KeyInputProperties {
     pub component_ref: ComponentRef<KeyInput>,
     #[prop_or_default]
     pub onchange: Callback<Option<KeyInstance>>,
+    #[prop_or_default]
+    pub save: bool,
 }
 
 #[derive(Debug)]
@@ -200,6 +202,7 @@ pub struct KeyInput {
     link: ComponentLink<Self>,
     state: KeyInputState,
     onchange: Callback<Option<KeyInstance>>,
+    state_manager: SavedStateManager,
 }
 
 impl Component for KeyInput {
@@ -208,16 +211,27 @@ impl Component for KeyInput {
 
     fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
         properties.component_ref.link_with(link.clone());
-        Self {
+
+        let (state_manager, init_state) =
+            SavedStateManager::new(Self::STORAGE_KEY, properties.save);
+
+        let mut this = Self {
             link,
             state: KeyInputState::default(),
             onchange: properties.onchange,
+            state_manager,
+        };
+
+        if let Some(key) = init_state {
+            this.update(KeyInputMessage::SetKey(key));
         }
+        this
     }
 
     fn update(&mut self, message: Self::Message) -> ShouldRender {
         match message {
             KeyInputMessage::SetKey(key) => {
+                self.state_manager.save(&key);
                 let (new_state, maybe_key) = KeyInputState::new(key);
                 self.state = new_state;
                 self.onchange.emit(maybe_key);
@@ -229,6 +243,9 @@ impl Component for KeyInput {
     fn change(&mut self, properties: Self::Properties) -> ShouldRender {
         properties.component_ref.link_with(self.link.clone());
         self.onchange = properties.onchange;
+
+        self.state_manager.set_save_flag(properties.save);
+        self.state_manager.save(&self.state.raw_key);
         false
     }
 
@@ -293,6 +310,8 @@ impl Component for KeyInput {
 }
 
 impl KeyInput {
+    const STORAGE_KEY: &'static str = "jwt__rawKey";
+
     fn view_err(err: &dyn fmt::Display) -> Html {
         html! {
             <p class="invalid-feedback mb-1">{ err }</p>

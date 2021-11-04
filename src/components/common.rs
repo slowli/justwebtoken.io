@@ -1,6 +1,7 @@
 //! Common reused components.
 
-use yew::{classes, html, Component, ComponentLink, Html};
+use wasm_bindgen::UnwrapThrowExt;
+use yew::{classes, html, web_sys, Component, ComponentLink, Html};
 
 use std::{cell::RefCell, rc::Rc};
 
@@ -180,6 +181,52 @@ impl<C: Component> ComponentRef<C> {
     pub fn send_message(&self, message: C::Message) {
         if let Some(link) = self.link.borrow().as_ref() {
             link.send_message(message);
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct SavedStateManager {
+    storage_key: &'static str,
+    save: bool,
+}
+
+impl SavedStateManager {
+    fn local_storage() -> web_sys::Storage {
+        web_sys::window()
+            .expect_throw("no window")
+            .local_storage()
+            .expect_throw("failed to get local_storage")
+            .expect_throw("no local storage")
+    }
+
+    pub fn new(storage_key: &'static str, save: bool) -> (Self, Option<String>) {
+        let saved = if save {
+            Self::local_storage().get_item(storage_key).unwrap_or(None)
+        } else {
+            None
+        };
+        let this = Self { storage_key, save };
+        (this, saved)
+    }
+
+    /// Returns `true` if the value was saved.
+    pub fn save(&self, value: &str) -> bool {
+        if self.save {
+            Self::local_storage()
+                .set_item(self.storage_key, value)
+                .is_ok()
+            // ^ the error here would not be fatal, so we just ignore it
+        } else {
+            false
+        }
+    }
+
+    pub fn set_save_flag(&mut self, save: bool) {
+        self.save = save;
+        if !save {
+            Self::local_storage().remove_item(self.storage_key).ok();
+            // ^ the error here would not be fatal, so we just ignore it
         }
     }
 }

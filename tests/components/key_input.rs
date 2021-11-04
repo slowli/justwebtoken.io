@@ -3,6 +3,7 @@
 // TODO: test key usage warning
 
 use assert_matches::assert_matches;
+use wasm_bindgen::UnwrapThrowExt;
 use wasm_bindgen_test::*;
 use yew::{web_sys::Element, Callback};
 
@@ -41,7 +42,7 @@ impl TestRig {
         self.received_key
             .borrow_mut()
             .take()
-            .expect("No key received")
+            .expect_throw("No key received")
     }
 
     fn assert_no_received_key(&self) {

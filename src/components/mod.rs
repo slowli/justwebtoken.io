@@ -1,6 +1,7 @@
 //! Application components.
 
 use jwt_compact::{jwk::JsonWebKey, UntrustedToken, ValidationError};
+use wasm_bindgen::UnwrapThrowExt;
 use yew::{html, Component, ComponentLink, Html, ShouldRender};
 
 use std::fmt;
@@ -345,7 +346,8 @@ impl App {
     fn generate_random_token(&self) {
         let key = KeyInstance::random_key();
         let token = KeyInstance::random_token(&key);
-        let jwk = serde_json::to_string(&JsonWebKey::from(&key)).expect("Cannot serialize key");
+        let jwk =
+            serde_json::to_string(&JsonWebKey::from(&key)).expect_throw("cannot serialize key");
         self.key_input.send_message(KeyInputMessage::SetKey(jwk));
         self.token_input
             .send_message(TokenInputMessage::SetToken(token));
@@ -393,10 +395,12 @@ impl Component for App {
                     <div class="mb-3">
                         <KeyInput
                             component_ref=self.key_input.clone()
+                            save=true
                             onchange=self.link.callback(AppMessage::new_key) />
                     </div>
                     <TokenInput
                         component_ref=self.token_input.clone()
+                        save=true
                         onchange=self.link.callback(AppMessage::new_token) />
                 </form>
 
