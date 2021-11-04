@@ -11,8 +11,10 @@
 use wasm_bindgen::prelude::*;
 use yew::utils::document;
 
+// Modules are public for the sake of integration testing.
 pub mod components;
 mod fields;
+mod rng;
 pub mod key_instance;
 
 use crate::components::App;
