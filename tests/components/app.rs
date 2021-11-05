@@ -9,7 +9,7 @@ use yew::web_sys::Element;
 use std::collections::HashMap;
 
 use justwebtoken_io::{
-    components::{App, AppMessage},
+    components::{App, AppMessage, AppProperties},
     key_instance::KeyInstance,
 };
 
@@ -30,7 +30,7 @@ fn get_decoded_claims(root_element: &Element) -> HashMap<String, Element> {
 
 #[wasm_bindgen_test]
 fn info_alert_is_displayed_by_default() {
-    let rig = TestRig::new(());
+    let rig = TestRig::new(AppProperties::default());
 
     assert_no_child(&rig.root_element, "#decoded-claims");
     assert_no_child(&rig.root_element, ".card-alert.border-danger");
@@ -42,7 +42,7 @@ fn info_alert_is_displayed_by_default() {
 
 #[wasm_bindgen_test]
 fn claims_are_displayed_for_correct_token() {
-    let rig = TestRig::new(());
+    let rig = TestRig::new(AppProperties::default());
     let key = KeyInstance::Symmetric(SecretBytes::borrowed(HS256_KEY));
     rig.component.send_message(AppMessage::new_key(Some(key)));
     let token = UntrustedToken::new(HS256_TOKEN).unwrap().into_owned();
@@ -59,7 +59,7 @@ fn claims_are_displayed_for_correct_token() {
 
 #[wasm_bindgen_test]
 fn error_is_displayed_for_incorrect_key_type() {
-    let rig = TestRig::new(());
+    let rig = TestRig::new(AppProperties::default());
     let key = serde_json::from_str(K256_JWK).unwrap();
     let key = KeyInstance::new(&key).unwrap();
     rig.component.send_message(AppMessage::new_key(Some(key)));

@@ -1,8 +1,14 @@
 import ClipboardJS from 'clipboard';
 import './common';
 
+const DESCRIPTIONS_STORAGE_KEY = 'jwt__toggleDescriptions';
+const SAVE_DATA_STORAGE_KEY = 'jwt__saveData';
+
+let app = null;
+
 import(/* webpackChunkName: "bundle" */ '../pkg').then((module) => {
-  const app = module.runApp();
+  const saveDataToggle = document.getElementById('toggle-saving-data');
+  app = module.runApp(saveDataToggle.checked);
 
   const randomizeButton = document.getElementById('randomize-token');
   randomizeButton.addEventListener('click', () => {
@@ -10,23 +16,36 @@ import(/* webpackChunkName: "bundle" */ '../pkg').then((module) => {
   });
 });
 
-const TOGGLE_DESCRIPTIONS_NAME = 'jwt__toggleDescriptions';
-
 window.addEventListener('DOMContentLoaded', () => {
-  const descriptionToggle = document.getElementById('toggle-descriptions');
-  const rootContainer = document.getElementById('app-root');
-
   // eslint-disable-next-line no-new
   new ClipboardJS('.btn.btn-copy');
 
+  // Setting: description toggle.
+  const descriptionToggle = document.getElementById('toggle-descriptions');
+  const rootContainer = document.getElementById('app-root');
   const onDescriptionToggleChange = () => {
     const showDescriptions = descriptionToggle.checked;
     rootContainer.classList.toggle('toggled-description-hide', !showDescriptions);
-    localStorage.setItem(TOGGLE_DESCRIPTIONS_NAME, showDescriptions.toString());
+    localStorage.setItem(DESCRIPTIONS_STORAGE_KEY, showDescriptions.toString());
   };
   descriptionToggle.addEventListener('change', onDescriptionToggleChange);
 
-  const showDescriptions = localStorage.getItem(TOGGLE_DESCRIPTIONS_NAME);
+  const showDescriptions = localStorage.getItem(DESCRIPTIONS_STORAGE_KEY);
   descriptionToggle.checked = (showDescriptions === null) || (showDescriptions === 'true');
   onDescriptionToggleChange();
+
+  // Setting: saving key / token.
+  const saveDataToggle = document.getElementById('toggle-saving-data');
+  const onSaveDataToggleChange = () => {
+    const saveData = saveDataToggle.checked;
+    if (app !== null) {
+      app.setSaveFlag(saveData);
+    }
+    localStorage.setItem(SAVE_DATA_STORAGE_KEY, saveData.toString());
+  };
+  saveDataToggle.addEventListener('change', onSaveDataToggleChange);
+
+  const saveData = localStorage.getItem(SAVE_DATA_STORAGE_KEY);
+  saveDataToggle.checked = (saveData === 'true');
+  onSaveDataToggleChange();
 });

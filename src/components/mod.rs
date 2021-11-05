@@ -2,7 +2,7 @@
 
 use jwt_compact::{jwk::JsonWebKey, UntrustedToken, ValidationError};
 use wasm_bindgen::UnwrapThrowExt;
-use yew::{html, Component, ComponentLink, Html, ShouldRender};
+use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
 
 use std::fmt;
 
@@ -165,6 +165,7 @@ impl AppState {
 pub enum AppMessage {
     SetKey(Option<Box<KeyInstance>>),
     SetToken(Option<Box<UntrustedToken<'static>>>),
+    SetSaveFlag(bool),
     RandomToken,
 }
 
@@ -178,12 +179,19 @@ impl AppMessage {
     }
 }
 
+#[derive(Debug, Clone, Default, PartialEq, Properties)]
+pub struct AppProperties {
+    #[prop_or_default]
+    pub save: bool,
+}
+
 #[derive(Debug)]
 pub struct App {
     link: ComponentLink<Self>,
     key_input: ComponentRef<KeyInput>,
     token_input: ComponentRef<TokenInput>,
     state: AppState,
+    save: bool,
 }
 
 impl App {
@@ -356,14 +364,15 @@ impl App {
 
 impl Component for App {
     type Message = AppMessage;
-    type Properties = ();
+    type Properties = AppProperties;
 
-    fn create(_: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
         Self {
             link,
             key_input: ComponentRef::default(),
             token_input: ComponentRef::default(),
             state: AppState::default(),
+            save: properties.save,
         }
     }
 
@@ -380,10 +389,14 @@ impl Component for App {
             AppMessage::RandomToken => {
                 self.generate_random_token();
             }
+            AppMessage::SetSaveFlag(save) => {
+                self.save = save;
+            }
         }
         true
     }
 
+    // Since this is a root component, changes are made via messages only.
     fn change(&mut self, _: Self::Properties) -> ShouldRender {
         false
     }
@@ -395,12 +408,12 @@ impl Component for App {
                     <div class="mb-3">
                         <KeyInput
                             component_ref=self.key_input.clone()
-                            save=true
+                            save=self.save
                             onchange=self.link.callback(AppMessage::new_key) />
                     </div>
                     <TokenInput
                         component_ref=self.token_input.clone()
-                        save=true
+                        save=self.save
                         onchange=self.link.callback(AppMessage::new_token) />
                 </form>
 

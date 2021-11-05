@@ -74,10 +74,18 @@ block main
       h4#settings-offcanvas-label.offcanvas-title Settings
       button.btn-close.text-reset(type='button', data-bs-dismiss='offcanvas', aria-label='Close')
     div.offcanvas-body
+      p.
+        Parameters that influence token verification. The parameters are stored in the local browser storage,
+        that is, not shared with the server.
+        (There is <abbr title="…other than to deliver static files">no server</abbr>.)
+
       form
-        div.form-check.form-switch
+        div.form-check.form-switch.mb-2
           input.form-check-input#toggle-descriptions(type='checkbox', role='switch', checked)
           label.form-check-label(for='toggle-descriptions') Show extended descriptions for token and key properties
+        div.form-check.form-switch.mb-2
+          input.form-check-input#toggle-saving-data(type='checkbox', role='switch')
+          label.form-check-label(for='toggle-saving-data') Save key and token in local browser storage
 
   div#app-root
     +loading

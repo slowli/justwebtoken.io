@@ -17,7 +17,7 @@ mod fields;
 pub mod key_instance;
 mod rng;
 
-use crate::components::{App, AppMessage};
+use crate::components::{App, AppMessage, AppProperties};
 
 #[wasm_bindgen]
 #[derive(Debug)]
@@ -31,16 +31,21 @@ impl AppLink {
     pub fn randomize_token(&self) {
         self.inner.send_message(AppMessage::RandomToken);
     }
+
+    #[wasm_bindgen(js_name = setSaveFlag)]
+    pub fn set_save_flag(&self, save: bool) {
+        self.inner.send_message(AppMessage::SetSaveFlag(save));
+    }
 }
 
 #[wasm_bindgen(js_name = runApp)]
-pub fn run_app() -> AppLink {
+pub fn run_app(save: bool) -> AppLink {
     yew::initialize();
     let element = document()
         .query_selector("#app-root")
         .expect_throw("cannot get app root node")
         .expect_throw("cannot unwrap body node");
-    let app = yew::App::<App>::new().mount(element);
+    let app = yew::App::<App>::new().mount_with_props(element, AppProperties { save });
     yew::run_loop();
     AppLink { inner: app }
 }
