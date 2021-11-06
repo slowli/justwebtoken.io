@@ -2,7 +2,7 @@
   "name": "justwebtoken-io",
   "version": "0.0.0",
   "private": true,
-  "description": "Simple website to verify JSON web tokens",
+  "description": "Website about JSON web tokens",
   "scripts": {
     "build": "npm-run-all build:*",
     "build:font": "node webpack/scripts/build-font.js",
@@ -13,7 +13,7 @@
     "lint:js": "eslint webpack webpack.config.js",
     "lint:scss": "stylelint \"webpack/**.scss\"",
     "lint:fmt": "cargo fmt --all -- --check",
-    "lint:clippy": "cargo clippy --workspace -- -D warnings"
+    "lint:clippy": "cargo clippy --workspace --all-targets -- -D warnings"
   },
   "repository": {
     "type": "git",

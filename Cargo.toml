@@ -4,7 +4,7 @@ version = "0.0.0"
 authors = ["Alex Ostrovski <ostrovski.alex@gmail.com>"]
 edition = "2018"
 license = "Apache-2.0"
-description = "Simple website for JWT verification"
+description = "Website about JSON web tokens"
 repository = "https://github.com/slowli/justwebtoken.io"
 publish = false
 
