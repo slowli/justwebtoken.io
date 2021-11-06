@@ -6,7 +6,7 @@ use yew::{
     classes, html, Callback, Component, ComponentLink, Html, InputData, Properties, ShouldRender,
 };
 
-use super::common::{view_data_row, ComponentRef, SavedStateManager};
+use super::common::{view_wide_data_row, ComponentRef, SavedStateManager};
 use crate::fields::{Field, StandardHeader};
 
 #[derive(Debug)]
@@ -60,18 +60,17 @@ impl ParsedHeader {
         }
     }
 
-    // TODO: Describe algorithm (in popover?)
     fn view(&self) -> Html {
         html! {
             <>
                 { Self::ALG_FIELD.with_value(&self.algorithm).view_aux() }
                 { if let Some(key_set_url) = &self.header.key_set_url {
-                    StandardHeader::by_name("jku").with_value(key_set_url).view_aux()
+                    StandardHeader::by_name("jku").with_code_value(key_set_url).view_aux()
                 } else {
                     html!{}
                 }}
                 { if let Some(key_id) = &self.header.key_id {
-                    StandardHeader::by_name("kid").with_value(key_id).view_aux()
+                    StandardHeader::by_name("kid").with_code_value(key_id).view_aux()
                 } else {
                     html!{}
                 }}
@@ -81,13 +80,13 @@ impl ParsedHeader {
                     html!{}
                 }}
                 { if let Some(cert_url) = &self.header.certificate_url {
-                    StandardHeader::by_name("x5u").with_value(cert_url).view_aux()
+                    StandardHeader::by_name("x5u").with_code_value(cert_url).view_aux()
                 } else {
                     html!{}
                 }}
                 { if let Some(cert_thumb) = &self.header.certificate_thumbprint {
                     let cert_thumb = Base64UrlUnpadded::encode_string(cert_thumb);
-                    StandardHeader::by_name("x5t#S256").with_value(&cert_thumb).view_aux()
+                    StandardHeader::by_name("x5t#S256").with_code_value(&cert_thumb).view_aux()
                 } else {
                     html!{}
                 }}
@@ -177,9 +176,9 @@ impl Component for TokenInput {
             control_classes.push("is-invalid");
         }
 
-        let row = view_data_row(
+        let row = view_wide_data_row(
             html! {
-                <label for="token" class="col-form-label">
+                <label for="token">
                     <strong>{ "Token" }</strong>
                 </label>
             },
@@ -189,6 +188,8 @@ impl Component for TokenInput {
                         id="token"
                         class=control_classes
                         placeholder="JSON web token"
+                        autocomplete="off"
+                        spellcheck="false"
                         value=self.state.raw_token.clone()
                         oninput=self.link.callback(move |e: InputData| {
                             TokenInputMessage::SetToken(e.value)

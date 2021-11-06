@@ -12,10 +12,16 @@ i[class^="bi-"]:before, i[class*=" bi-"]:before {
 
 textarea.form-control {
   resize: none;
-  height: 80px;
+  height: 120px;
 
   &.small {
     font-size: .875rem !important;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  textarea.form-control {
+    height: 80px;
   }
 }
 

@@ -199,7 +199,7 @@ impl App {
                 } else {
                     html! {}
                 }}
-                <div class="d-flex flex-row mb-3">
+                <div class="d-flex flex-row align-items-baseline mb-3">
                     <h3 id="claims" class="mb-0 me-5">{ "Claims" }</h3>
                     { Self::view_claims_nav() }
                 </div>
