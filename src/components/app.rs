@@ -199,10 +199,7 @@ impl App {
                 } else {
                     html! {}
                 }}
-                <div class="d-flex flex-row align-items-baseline mb-3">
-                    <h3 id="claims" class="mb-0 me-5">{ "Claims" }</h3>
-                    { Self::view_claims_nav() }
-                </div>
+                { Self::view_claims_nav() }
                 <div class="tab-content">
                     <div
                         class="tab-pane fade show active"
@@ -227,7 +224,12 @@ impl App {
 
     fn view_claims_nav() -> Html {
         html! {
-            <nav class="nav nav-pills">
+            <nav class="nav nav-tabs mb-3">
+                <button
+                    class="nav-link disabled ps-0 text-reset"
+                    type="button">
+                    <strong>{ "Claims: " }</strong>
+                </button>
                 <button
                     class="nav-link active"
                     id="decoded-claims-tab"

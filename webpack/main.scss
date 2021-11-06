@@ -98,3 +98,13 @@ textarea.form-control {
     padding-left: calc(var(--bs-gutter-x) * .5 + 1rem);
   }
 }
+
+.text-decoration--md-underline {
+  text-decoration: underline !important;
+}
+
+@include media-breakpoint-up(md) {
+  .text-decoration--md-underline {
+    text-decoration: none !important;
+  }
+}

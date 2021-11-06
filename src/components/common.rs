@@ -34,7 +34,10 @@ impl FieldWithValue {
         view_data_row(
             html! {
                 <div class="ps-md-2">
-                    <label class="text-decoration-underline">{ field.name }</label>
+                    <label
+                        class="text-decoration--md-underline">
+                        { field.name }
+                    </label>
                     { if let Some(link) = field.link {
                         Self::view_link(link)
                     } else {
@@ -72,11 +75,13 @@ impl FieldWithValue {
         view_data_row(
             html! {
                 <>
-                    <label><strong>{ field.name }</strong></label>
-                    { " – " }
-                    <abbr title="Name of the claim field in claims object">
+                    <label class="text-decoration--md-underline">{ field.name }</label>
+                    { " " }
+                    <span
+                        class="badge bg-info text-dark fw-normal"
+                        title="Name of the claim field in claims object">
                         { original_name }
-                    </abbr>
+                    </span>
                     { if let Some(link) = field.link {
                         Self::view_link(link)
                     } else {
