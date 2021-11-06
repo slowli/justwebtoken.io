@@ -50,7 +50,7 @@ jobs:
         run: npm test -- --chrome --firefox
 
       # Build intermediate artifact & check that the Webpack build works.
-      - name: Build
+      - name: Build website
         run: "npm run build"
 
       # Frontend lints
