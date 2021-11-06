@@ -15,7 +15,7 @@ wasm-opt = ["-Os", "--enable-mutable-globals"]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-base64ct = { version = "1.0", features = ["alloc"] }
+base64ct = { version = "~1.1", features = ["alloc"] }
 chrono = { version = "0.4.19", default-features = false, features = ["wasmbind"] }
 ed25519-compact = { version = "0.1.9", default-features = false }
 k256 = { version = "0.9.4", default-features = false }
@@ -30,10 +30,10 @@ yew = "0.18.0"
 # Set up `getrandom` crate to use the host JS CSPRNG.
 getrandom = { version = "0.2", features = ["custom"] }
 
-# FIXME: use git revision
 [dependencies.jwt-compact]
 version = "0.5.0-beta.1"
-path = "../jwt-compact"
+git = "https://github.com/slowli/jwt-compact"
+rev = "022aec675d3e5f359d0c441343d3d9c07035003d"
 default-features = false
 features = ["clock", "ed25519-compact", "with_rsa", "k256"]
 

@@ -19,8 +19,19 @@ const distPath = path.resolve(__dirname, 'dist');
 
 function getDependencyInfo(dependencyName) {
   const packageInfo = cargoLockfile.package.find(({ name }) => name === dependencyName);
+
+  const gitRegex = /^git.*github\.com\/(?<repo>.*)\?.*#(?<rev>[0-9a-f]{40})$/;
+  const gitMatch = packageInfo.source?.match(gitRegex);
+  const rev = gitMatch?.groups?.rev;
+  const rawGithubRepo = gitMatch?.groups?.repo;
+  const githubRepo = (rawGithubRepo?.endsWith('.git') ?? false)
+    ? rawGithubRepo.substring(0, rawGithubRepo.length - 4)
+    : rawGithubRepo;
+
   return {
     version: packageInfo.version,
+    rev,
+    githubRepo,
   };
 }
 

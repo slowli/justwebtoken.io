@@ -1,6 +1,7 @@
 //! Tests for `<KeyInput />` component.
 
 // TODO: test key usage warning
+// TODO: test state persistence
 
 use assert_matches::assert_matches;
 use wasm_bindgen::UnwrapThrowExt;

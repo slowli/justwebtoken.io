@@ -45,3 +45,8 @@ block main
         | #{depName} version:
         |
         a(href=`https://crates.io/crates/${depName}/${depInfo.version}`) #{depInfo.version}
+        if depInfo.rev
+          |
+          | @ commit
+          |
+          a(href=`https://github.com/${depInfo.githubRepo}/tree/${depInfo.rev}`) #{depInfo.rev.substring(0, 7)}

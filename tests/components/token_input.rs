@@ -1,5 +1,7 @@
 //! Tests for `<TokenInput />` component.
 
+// TODO: test state persistence
+
 use jwt_compact::UntrustedToken;
 use wasm_bindgen::UnwrapThrowExt;
 use wasm_bindgen_test::*;
