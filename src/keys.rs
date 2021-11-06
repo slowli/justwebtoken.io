@@ -70,8 +70,13 @@ impl KeyInstance {
                 }),
             },
 
-            // FIXME: check alg
-            Self::Rsa(key) => Rsa::with_name(alg).validate_integrity(token, key),
+            Self::Rsa(key) => alg
+                .parse::<Rsa>()
+                .map_err(|_| ValidationError::AlgorithmMismatch {
+                    expected: "RS* or PS* algorithm".to_owned(),
+                    actual: alg.to_owned(),
+                })?
+                .validate_integrity(token, key),
 
             Self::Ed25519(key) => Ed25519.validate_integrity(token, key),
 

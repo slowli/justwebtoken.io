@@ -14,7 +14,7 @@ use yew::{utils::document, ComponentLink};
 // Modules are public for the sake of integration testing.
 pub mod components;
 mod fields;
-pub mod key_instance;
+pub mod keys;
 mod rng;
 
 use crate::components::{App, AppMessage, AppProperties};

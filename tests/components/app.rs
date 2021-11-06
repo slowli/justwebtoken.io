@@ -10,7 +10,7 @@ use std::collections::HashMap;
 
 use justwebtoken_io::{
     components::{App, AppMessage, AppProperties},
-    key_instance::KeyInstance,
+    keys::KeyInstance,
 };
 
 use super::{

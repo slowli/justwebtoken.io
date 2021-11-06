@@ -11,7 +11,7 @@ use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
 use justwebtoken_io::{
     components::key_input::{KeyInput, KeyInputMessage, KeyInputProperties},
-    key_instance::KeyInstance,
+    keys::KeyInstance,
 };
 
 use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase, K256_JWK};

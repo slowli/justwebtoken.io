@@ -12,7 +12,7 @@ use yew::{
 use std::fmt;
 
 use super::common::{view_data_row, ComponentRef, Icon, SavedStateManager};
-use crate::{fields::Field, key_instance::KeyInstance};
+use crate::{fields::Field, keys::KeyInstance};
 
 /// Key type together with auxiliary information.
 #[derive(Debug)]

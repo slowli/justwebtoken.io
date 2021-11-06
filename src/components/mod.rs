@@ -17,7 +17,7 @@ use self::{
 };
 use crate::{
     fields::StandardClaim,
-    key_instance::{GenericClaims, GenericToken, KeyInstance},
+    keys::{GenericClaims, GenericToken, KeyInstance},
 };
 
 /// Result of token verification.
