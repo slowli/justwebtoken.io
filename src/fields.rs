@@ -29,6 +29,10 @@ impl Field {
     pub fn with_html_value(self, value: Html) -> FieldWithValue {
         FieldWithValue { field: self, value }
     }
+
+    pub fn with_code_value(self, value: &dyn fmt::Display) -> FieldWithValue {
+        self.with_html_value(html! { <code>{ value }</code> })
+    }
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -63,5 +67,9 @@ impl StandardHeader {
 
     pub fn with_value(self, value: &dyn fmt::Display) -> FieldWithValue {
         self.0.with_value(value)
+    }
+
+    pub fn with_code_value(self, value: &dyn fmt::Display) -> FieldWithValue {
+        self.0.with_code_value(value)
     }
 }

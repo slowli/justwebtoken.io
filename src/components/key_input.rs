@@ -11,7 +11,7 @@ use yew::{
 
 use std::fmt;
 
-use super::common::{view_data_row, ComponentRef, Icon, SavedStateManager};
+use super::common::{view_wide_data_row, ComponentRef, Icon, SavedStateManager};
 use crate::{fields::Field, keys::KeyInstance};
 
 /// Key type together with auxiliary information.
@@ -93,6 +93,7 @@ impl ParsedKey {
         let should_warn =
             self.is_signing_key && !matches!(self.key_type, ExtendedKeyType::Symmetric { .. });
         let thumbprint = Base64UrlUnpadded::encode_string(&self.sha256_thumbprint);
+
         html! {
             <>
                 { if should_warn {
@@ -101,7 +102,7 @@ impl ParsedKey {
                     html!{}
                 }}
                 { Self::KEY_FIELD.with_value(&self.key_type).view_aux() }
-                { Self::THUMBPRINT_FIELD.with_value(&thumbprint).view_aux() }
+                { Self::THUMBPRINT_FIELD.with_code_value(&thumbprint).view_aux() }
             </>
         }
     }
@@ -262,9 +263,9 @@ impl Component for KeyInput {
             control_classes.push("is-invalid");
         }
 
-        let row = view_data_row(
+        let row = view_wide_data_row(
             html! {
-                <label for="key" class="col-form-label">
+                <label for="key">
                     <strong>{ "Verifying key" }</strong>
                 </label>
             },
@@ -274,6 +275,8 @@ impl Component for KeyInput {
                         id="key"
                         class=control_classes
                         placeholder="Encoded key"
+                        autocomplete="off"
+                        spellcheck="false"
                         value=self.state.raw_key.clone()
                         oninput=self.link.callback(move |e: InputData| {
                             KeyInputMessage::SetKey(e.value)

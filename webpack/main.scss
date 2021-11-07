@@ -12,10 +12,16 @@ i[class^="bi-"]:before, i[class*=" bi-"]:before {
 
 textarea.form-control {
   resize: none;
-  height: 80px;
+  height: 120px;
 
   &.small {
     font-size: .875rem !important;
+  }
+}
+
+@include media-breakpoint-up(lg) {
+  textarea.form-control {
+    height: 80px;
   }
 }
 
@@ -90,5 +96,15 @@ textarea.form-control {
 @include media-breakpoint-down(sm) {
   .anchor-fix-sm {
     padding-left: calc(var(--bs-gutter-x) * .5 + 1rem);
+  }
+}
+
+.text-decoration--md-underline {
+  text-decoration: underline !important;
+}
+
+@include media-breakpoint-up(md) {
+  .text-decoration--md-underline {
+    text-decoration: none !important;
   }
 }

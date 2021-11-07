@@ -33,14 +33,17 @@ impl FieldWithValue {
         let field = &self.field;
         view_data_row(
             html! {
-                <>
-                    <label class="ms-md-3 text-decoration-underline">{ field.name }</label>
+                <div class="ps-md-2">
+                    <label
+                        class="text-decoration--md-underline">
+                        { field.name }
+                    </label>
                     { if let Some(link) = field.link {
                         Self::view_link(link)
                     } else {
                         html!{}
                     }}
-                </>
+                </div>
             },
             html! {
                 <>
@@ -56,8 +59,9 @@ impl FieldWithValue {
     fn view_link(link: &'static str) -> Html {
         html! {
             <>
-                { " " }
+                { "\u{00a0}" } // non-breakable space
                 <a href=link
+                    target="_blank"
                     class="text-decoration-none"
                     title="View field definition">
                     { Icon::Link.view() }
@@ -71,11 +75,13 @@ impl FieldWithValue {
         view_data_row(
             html! {
                 <>
-                    <label><strong>{ field.name }</strong></label>
-                    { " – " }
-                    <abbr title="Name of the claim field in claims object">
+                    <label class="text-decoration--md-underline">{ field.name }</label>
+                    { " " }
+                    <span
+                        class="badge bg-info text-dark fw-normal"
+                        title="Name of the claim field in claims object">
                         { original_name }
-                    </abbr>
+                    </span>
                     { if let Some(link) = field.link {
                         Self::view_link(link)
                     } else {
@@ -104,8 +110,17 @@ pub fn str_to_html(html_str: &str) -> Html {
 pub fn view_data_row(label: Html, value: Html) -> Html {
     html! {
         <div class="row mb-1">
-            <div class="col-md-3">{ label }</div>
-            <div class="col-md-9">{ value }</div>
+            <div class="col-md-4 col-lg-3">{ label }</div>
+            <div class="col-md-8 col-lg-9">{ value }</div>
+        </div>
+    }
+}
+
+pub fn view_wide_data_row(label: Html, value: Html) -> Html {
+    html! {
+        <div class="row mb-1">
+            <div class="col-lg-3 mb-1">{ label }</div>
+            <div class="col-lg-9">{ value }</div>
         </div>
     }
 }
