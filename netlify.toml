@@ -5,3 +5,10 @@ command = "bash ./build.sh"
 [build.environment]
 NODE_VERSION = "16.13.0"
 RUST_VERSION = "1.56.1"
+
+# Set up redirects from aux domains to the canonical one.
+[[redirects]]
+from = "https://justwebtoken.dev/*"
+to = "https://justwebtoken.io/:splat"
+status = 301
+force = true
