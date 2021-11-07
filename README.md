@@ -1,7 +1,13 @@
 # Just Web Tokens
 
+[![Build status][ci-image]][ci-url]
+[![Live website][website-image]][website-url]
 [![License: Apache-2.0][license-image]][license-url] 
 
+[ci-image]: https://github.com/slowli/justwebtoken.io/actions/workflows/ci.yml/badge.svg
+[ci-url]: https://github.com/slowli/justwebtoken.io/actions/workflows/ci.yml
+[website-image]: https://img.shields.io/badge/website-live-blue.svg
+[website-url]: https://justwebtoken.io/
 [license-image]: https://img.shields.io/github/license/slowli/justwebtoken.io.svg
 [license-url]: https://github.com/slowli/justwebtoken.io/blob/master/LICENSE
 
