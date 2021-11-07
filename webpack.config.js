@@ -2,6 +2,7 @@ const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 const toml = require('toml');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const WasmPackPlugin = require('@wasm-tool/wasm-pack-plugin');
@@ -77,8 +78,9 @@ module.exports = {
   entry: entries,
   output: {
     path: distPath,
-    filename: '[name].js',
-    chunkFilename: '[name].[chunkhash:8].js',
+    filename: '_assets/js/[name].js',
+    chunkFilename: '_assets/js/[name].[chunkhash:8].js',
+    webassemblyModuleFilename: '_assets/js/[hash].module.wasm',
   },
   experiments: {
     asyncWebAssembly: true,
@@ -109,6 +111,10 @@ module.exports = {
         test: /\.pug$/i,
         loader: 'pug-loader',
       },
+      {
+        test: /\.(woff|woff2)$/i,
+        type: 'asset',
+      },
     ],
   },
   optimization: {
@@ -125,7 +131,15 @@ module.exports = {
     },
   },
   plugins: [
-    new MiniCssExtractPlugin(),
+    new CopyWebpackPlugin({
+      patterns: [{
+        from: './webpack/favicon',
+        to: '_assets/css/[name][ext]',
+      }],
+    }),
+    new MiniCssExtractPlugin({
+      filename: '_assets/css/[name].css',
+    }),
     new WasmPackPlugin({
       crateDirectory: '.',
       extraArgs: '--no-typescript',
