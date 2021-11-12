@@ -6,9 +6,9 @@ const SAVE_DATA_STORAGE_KEY = 'jwt__saveData';
 
 let app = null;
 
-import(/* webpackChunkName: "bundle" */ '../pkg').then((module) => {
+import(/* webpackChunkName: "bundle" */ '../pkg').then((wasm) => {
   const saveDataToggle = document.getElementById('toggle-saving-data');
-  app = module.runApp(saveDataToggle.checked);
+  app = wasm.runApp(saveDataToggle.checked);
 
   const randomizeButton = document.getElementById('randomize-token');
   randomizeButton.addEventListener('click', () => {

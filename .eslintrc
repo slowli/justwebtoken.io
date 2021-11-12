@@ -17,6 +17,7 @@
       {
         "devDependencies": ["webpack/scripts/**", "*.config.js"]
       }
-    ]
+    ],
+    "import/no-relative-packages": "off"
   }
 }
