@@ -23,7 +23,7 @@ impl fmt::Display for Field {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             formatter,
-            "Field {{ name: {name:?}, description: {descr:?}, link: {link:?} }}",
+            "(Field {{ name: {name:?}, description: {descr:?}, link: {link:?} }})",
             name = self.name,
             descr = self.description.trim(),
             link = self.link
@@ -32,16 +32,46 @@ impl fmt::Display for Field {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
-struct StandardFields {
-    standard_headers: HashMap<String, Field>,
-    standard_claims: HashMap<String, Field>,
+struct Claim {
+    #[serde(flatten)]
+    field: Field,
+    category: String,
 }
 
-fn generate_fn(
+impl fmt::Display for Claim {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            formatter,
+            "{{ field: {field}, category: {cat:?} }}",
+            field = self.field,
+            cat = self.category
+        )
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct ClaimCategory {
+    title: String,
+}
+
+impl fmt::Display for ClaimCategory {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, " {{ title: {title:?} }}", title = self.title)
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct StandardFields {
+    standard_headers: HashMap<String, Field>,
+    standard_claims: HashMap<String, Claim>,
+    claims_categories: HashMap<String, ClaimCategory>,
+}
+
+fn generate_fn<T: fmt::Display>(
     dest_file: &mut File,
     fn_name: &str,
     ty: &str,
-    fields: &HashMap<String, Field>,
+    fields: &HashMap<String, T>,
 ) -> Result<(), Box<dyn Error>> {
     writeln!(
         dest_file,
@@ -57,7 +87,7 @@ fn generate_fn(
     for (field_name, field) in fields {
         writeln!(
             dest_file,
-            "    map.insert(\"{name}\", {ty}({field}));",
+            "    map.insert(\"{name}\", {ty}{field});",
             name = field_name,
             ty = ty,
             field = field
@@ -87,6 +117,12 @@ fn main() -> Result<(), Box<dyn Error>> {
         "create_claims_map",
         "StandardClaim",
         &fields.standard_claims,
+    )?;
+    generate_fn(
+        &mut dest_file,
+        "create_claim_categories_map",
+        "ClaimCategory",
+        &fields.claims_categories,
     )?;
 
     // Set up caching logic.

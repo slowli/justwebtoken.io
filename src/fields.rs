@@ -36,16 +36,22 @@ impl Field {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct StandardClaim(pub Field);
+pub struct StandardClaim {
+    pub field: Field,
+    pub category: &'static str,
+}
 
 // Defines:
 //
-// fn create_claims_map() -> HashMap<&'static str, StandardField> { /* ... */ }
-// fn create_headers_map() -> HashMap<&'static str, StandardField> { /* ... */ }
+// fn create_claims_map() -> HashMap<&'static str, StandardClaim> { /* ... */ }
+// fn create_headers_map() -> HashMap<&'static str, StandardHeader> { /* ... */ }
+// fn create_claim_categories_map() -> HashMap<&'static str, ClaimCategory> { /* ... */ }
 include!(concat!(env!("OUT_DIR"), "/std_maps.rs"));
 
 static CLAIMS_MAP: Lazy<HashMap<&'static str, StandardClaim>> = Lazy::new(create_claims_map);
 static HEADERS_MAP: Lazy<HashMap<&'static str, StandardHeader>> = Lazy::new(create_headers_map);
+static CLAIM_CATEGORIES_MAP: Lazy<HashMap<&'static str, ClaimCategory>> =
+    Lazy::new(create_claim_categories_map);
 
 impl StandardClaim {
     pub fn by_name(name: &str) -> Self {
@@ -71,5 +77,16 @@ impl StandardHeader {
 
     pub fn with_code_value(self, value: &dyn fmt::Display) -> FieldWithValue {
         self.0.with_code_value(value)
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct ClaimCategory {
+    pub title: &'static str,
+}
+
+impl ClaimCategory {
+    pub fn get(name: &str) -> Option<Self> {
+        CLAIM_CATEGORIES_MAP.get(name).copied()
     }
 }

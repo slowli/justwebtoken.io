@@ -2,15 +2,16 @@
 
 use jwt_compact::{jwk::JsonWebKey, UntrustedToken, ValidationError};
 use wasm_bindgen::UnwrapThrowExt;
-use yew::{html, Component, ComponentLink, Html, Properties, ShouldRender};
+use yew::{html, virtual_dom::VList, Component, ComponentLink, Html, Properties, ShouldRender};
 
-use std::fmt;
+use std::{collections::HashMap, fmt};
 
 use super::{
     common::{str_to_html, view_data_row, Alert, ComponentRef},
     key_input::{KeyInput, KeyInputMessage},
     token_input::{TokenInput, TokenInputMessage},
 };
+use crate::fields::ClaimCategory;
 use crate::{
     fields::StandardClaim,
     keys::{GenericClaims, GenericToken, KeyInstance},
@@ -253,37 +254,72 @@ impl App {
     }
 
     fn view_decoded_claims(claims: &GenericClaims) -> Html {
-        let custom_claims = claims.custom.as_object().unwrap();
-        let custom_claims_view = custom_claims
-            .iter()
-            .map(|(name, value)| Self::view_custom_claim(name, value))
-            .collect::<Html>();
+        let mut time_claims_html = Vec::with_capacity(3);
+        if let Some(expiration) = &claims.expiration {
+            let html = Self::view_claim("exp", StandardClaim::by_name("exp"), expiration, false);
+            time_claims_html.push(("exp", html));
+        }
+        if let Some(issued_at) = &claims.issued_at {
+            let html = Self::view_claim("iat", StandardClaim::by_name("iat"), issued_at, false);
+            time_claims_html.push(("iat", html));
+        }
+        if let Some(not_before) = &claims.not_before {
+            let html = Self::view_claim("nbf", StandardClaim::by_name("nbf"), not_before, false);
+            time_claims_html.push(("nbf", html));
+        }
 
+        let custom_claims = claims.custom.as_object().unwrap();
+        let custom_claims_html = custom_claims
+            .iter()
+            .map(|(name, value)| (name.as_str(), Self::view_custom_claim(name, value)));
+
+        let mut claims_by_category: HashMap<&str, VList> = HashMap::new();
+        for (name, html) in custom_claims_html.chain(time_claims_html) {
+            let category = StandardClaim::get(name).map_or("", |claim| claim.category);
+            claims_by_category.entry(category).or_default().push(html);
+        }
+
+        // FIXME: stable order
+        let all_claims_html: Html = claims_by_category
+            .into_iter()
+            .map(|(name, html)| Self::view_claim_category(name, html.into()))
+            .collect();
         html! {
-            <>
-                { if let Some(expiration) = &claims.expiration {
-                    Self::view_claim("exp", StandardClaim::by_name("exp"), expiration, false)
-                } else {
-                    html! {}
-                }}
-                { if let Some(issued_at) = &claims.issued_at {
-                    Self::view_claim("iat", StandardClaim::by_name("iat"), issued_at, false)
-                } else {
-                    html! {}
-                }}
-                { if let Some(not_before) = &claims.not_before {
-                    Self::view_claim("nbf", StandardClaim::by_name("nbf"), not_before, false)
-                } else {
-                    html! {}
-                }}
-                { custom_claims_view }
-            </>
+            <div class="accordion accordion-flush">{ all_claims_html }</div>
+        }
+    }
+
+    fn view_claim_category(category_id: &str, claims_html: Html) -> Html {
+        let title =
+            ClaimCategory::get(category_id).map_or("Other claims", |category| category.title);
+        let header_id = format!("claim-cat-{}-head", category_id);
+        let body_id = format!("claim-cat-{}", category_id);
+        html! {
+            <div class="accordion-item">
+                <h2 class="accordion-header" id=header_id.clone()>
+                    <button
+                        class="accordion-button ps-0 bg-transparent"
+                        type="button"
+                        data-bs-toggle="collapse"
+                        data-bs-target=format!("#{}", body_id)
+                        aria-expanded="true"
+                        aria-controls=body_id.clone()>
+                        { title }
+                    </button>
+                </h2>
+                <div
+                    id=body_id
+                    class="accordion-collapse collapse show py-3"
+                    aria-labelledby=header_id>
+                    { claims_html }
+                </div>
+            </div>
         }
     }
 
     fn view_claim(
         field_name: &str,
-        StandardClaim(claim): StandardClaim,
+        claim: StandardClaim,
         value: &dyn fmt::Display,
         show_as_code: bool,
     ) -> Html {
@@ -292,7 +328,7 @@ impl App {
         } else {
             html! { { value } }
         };
-        claim.with_html_value(value).view_as_claim(field_name)
+        claim.field.with_html_value(value).view_as_claim(field_name)
     }
 
     fn view_unknown_claim(field_name: &str, value: &str) -> Html {
