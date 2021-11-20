@@ -30,6 +30,7 @@ description = "Application-specific token type. Usually set to <code>JWT</code>.
 # Standard claims together with their descriptions.
 [standard_claims.exp]
 name = "Expiration timestamp"
+category = "basic"
 link = "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.4"
 description = """\
 Earliest timestamp after which the token must be \
@@ -40,6 +41,7 @@ format = "Unix timestamp – an integer number of seconds since 1970-01-01 00:00
 
 [standard_claims.iat]
 name = "Issuance timestamp"
+category = "basic"
 link = "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.6"
 description = """\
 Timestamp at which token was issued. Useful to determine \
@@ -49,6 +51,7 @@ format = "Unix timestamp – an integer number of seconds since 1970-01-01 00:00
 
 [standard_claims.nbf]
 name = "Maturity timestamp"
+category = "basic"
 link = "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.5"
 description = """\
 “Not before” timestamp restricting the minimum clock time \
@@ -58,6 +61,7 @@ format = "Unix timestamp – an integer number of seconds since 1970-01-01 00:00
 
 [standard_claims.iss]
 name = "Issuer"
+category = "basic"
 link = "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.1"
 description = """\
 Principal that has issued this token. Apps \
@@ -67,10 +71,12 @@ format = "Application-specific; generally, a string (potentially, a URI)"
 
 [standard_claims.sub]
 name = "Subject"
+category = "basic"
 link = "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.2"
 description = """\
 Describes entity that the claims apply to, generally by using its ID \
-which is globally unique or unique to the issuing system.\
+which is globally unique or unique to the issuing system. \
+In the context of OAuth 2.0, the subject is the end user.\
 """
 format = """\
 Application-specific; generally, a string identifier (e.g., a \
@@ -79,6 +85,7 @@ Application-specific; generally, a string identifier (e.g., a \
 
 [standard_claims.aud]
 name = "Audience"
+category = "basic"
 link = "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.3"
 description = """\
 Identifies intended recipient(s) of the token. The token verifier must \
@@ -88,6 +95,7 @@ format = "Array of strings (potentially, URIs), or a single string in case of a 
 
 [standard_claims.jti]
 name = "Token ID"
+category = "basic"
 link = "https://datatracker.ietf.org/doc/html/rfc7519#section-4.1.7"
 description = """\
 Unique token identifier chosen using a collision-resistant algorithm \
@@ -102,6 +110,7 @@ Application-specific; generally, represents random bytes (e.g., in form of a \
 
 [standard_claims.name]
 name = "Full name"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = """\
 Full name of the end user this token is issued to, potentially inlcuding titles and affixes \
@@ -114,24 +123,28 @@ separated by a space char\
 
 [standard_claims.given_name]
 name = "Given name"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "Given name(s) of the user this token is issued to."
 format = "String with given names separated by a space char, such as <code>John William</code>"
 
 [standard_claims.family_name]
 name = "Family name"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "Last name(s) of the user this token is issued to."
 format = "String with last names separated by a space char, such as <code>Ortega y Gasset</code>"
 
 [standard_claims.middle_name]
 name = "Middle name"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "Middle name(s) of the user this token is issued to."
 format = "String with middle names separated by a space char, such as <code>Ivanovich</code>"
 
 [standard_claims.nickname]
 name = "Nickname"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = """\
 Casual name of the user this token is issued to. Semantically similar \
@@ -141,6 +154,7 @@ format = "String such as <code>Mike</code>"
 
 [standard_claims.preferred_username]
 name = "Nickname"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = """\
 Name identifying the user for the <a href="https://datatracker.ietf.org/doc/html/rfc6749">OAuth 2.0</a> client. \
@@ -151,12 +165,14 @@ format = "String such as <code>j.doe</code> or <code>john.doe@example.com</code>
 
 [standard_claims.profile]
 name = "Profile"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "Link to the user’s profile page hosted by the issuer"
 format = "URL string such as <code>https://example.com/u/john.doe</code>"
 
 [standard_claims.picture]
 name = "Picture"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "Link to the user’s profile picture or photo hosted by the issuer"
 format = """\
@@ -167,18 +183,21 @@ containing the image.\
 
 [standard_claims.website]
 name = "Website"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "Link to the user’s website, such as a blog"
 format = "URL string such as <code>https://john-doe.example.com/</code>"
 
 [standard_claims.email]
 name = "Email"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "User’s preferred email address"
 format = "Email string, for example <code>john.doe@example.com</code>"
 
 [standard_claims.email_verified]
 name = "Email verified?"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = """\
 Information on whether the issuer has verified the user’s email address \
@@ -188,6 +207,7 @@ format = "Boolean value such as <code>true</code>"
 
 [standard_claims.birthdate]
 name = "Birthday"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "User’s date of birth"
 format = """\
@@ -197,6 +217,7 @@ Specifying just a year (<code>1990</code>) is admissible as well.\
 
 [standard_claims.zoneinfo]
 name = "Time zone"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "User’s preferred time zone"
 format = """\
@@ -206,6 +227,7 @@ such as <code>Europe/Paris</code>\
 
 [standard_claims.locale]
 name = "Locale"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "User’s preferred locale"
 format = """\
@@ -217,6 +239,7 @@ country codes are allowed.\
 
 [standard_claims.phone_number]
 name = "Phone number"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "User’s preferred phone number"
 format = """\
@@ -227,6 +250,7 @@ such as <code>+1 (425) 555-1212</code>.
 
 [standard_claims.phone_number_verified]
 name = "Phone number verified?"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = """\
 Information on whether the issuer has verified the user’s phone number \
@@ -236,11 +260,12 @@ format = "Boolean value such as <code>true</code>"
 
 [standard_claims.address]
 name = "Address"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "User’s preferred postal address"
 format = """\
-<p>Object with a subset of the following fields:</p>
-<ul>
+Object with a subset of the following fields:
+<ul class="my-1">
   <li><code>formatted</code> – Full mailing address</li>
   <li><code>street_address</code> – Part of the address related to the street, \
     e.g. house number, street name, PO box</li>
@@ -249,24 +274,27 @@ format = """\
   <li><code>postal_code</code> – Zip code / postal code</li>
   <li><code>country</code> – Country name</li>
 </ul>
-<p><code>formatted</code> and <code>street_address</code> fields can contain newlines, \
-which can be represented as <code>\\r\\n</code> or <code>\\n</code> chars.</p>\
+<code>formatted</code> and <code>street_address</code> fields can contain newlines, \
+which can be represented as <code>\\r\\n</code> or <code>\\n</code> chars.\
 """
 
 [standard_claims.updated_at]
 name = "Updated at"
+category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = "Timestamp when the user’s info was last updated"
 format = "Unix timestamp – an integer number of seconds since 1970-01-01 00:00:00 in the UTC timezone"
 
 [standard_claims.auth_time]
 name = "Authentication time"
+category = "authentication"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#IDToken"
 description = "Timestamp when the user authenticated with the issuer"
 format = "Unix timestamp – an integer number of seconds since 1970-01-01 00:00:00 in the UTC timezone"
 
 [standard_claims.nonce]
 name = "Cryptographic nonce"
+category = "authentication"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#IDToken"
 description = """\
 Unique value included into the token to prevent \
@@ -281,6 +309,7 @@ Application-specific; generally, represents random bytes (e.g., in form of a \
 
 [standard_claims.acr]
 name = "Authentication context"
+category = "authentication"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#IDToken"
 description = """\
 Reference to the method used to authenticate the user, or the class of this method. \
@@ -299,6 +328,7 @@ number strings, such as <code>2</code>.\
 
 [standard_claims.amr]
 name = "Authenticaton methods"
+category = "authentication"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#IDToken"
 description = """\
 References for the method(s) used to authenticate the user. As an example, \
@@ -308,6 +338,7 @@ format = "Array of strings, each of strings being an application-specific method
 
 [standard_claims.azp]
 name = "Authorized party"
+category = "authentication"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#IDToken"
 description = """\
 Party to which the token was issued. Fulfils almost the same role as the <code>aud</code> claim \
@@ -318,6 +349,7 @@ format = "String (potentially a URI) with the OAuth 2.0 client ID of the party"
 
 [standard_claims.act]
 name = "Actor"
+category = "delegation"
 link = "https://www.rfc-editor.org/rfc/rfc8693.html#name-act-actor-claim"
 description = """\
 Party to whom the subject has delegated authority to act on behalf of them. \
@@ -331,6 +363,7 @@ and may include other claims in order to uniquely identify the actor (e.g., the 
 
 [standard_claims.may_act]
 name = "Authorized actor"
+category = "delegation"
 description = """\
 Information about a party that is authorized to act on behalf of the subject. \
 This can be used during <a href="https://www.rfc-editor.org/rfc/rfc8693.html">OAuth 2.0 token exchange</a> \
@@ -345,6 +378,7 @@ and may include other claims in order to uniquely identify the actor (e.g., the 
 
 [standard_claims.scope]
 name = "OAuth 2.0 scopes"
+category = "oauth"
 link = "https://www.rfc-editor.org/rfc/rfc8693.html#name-scope-scopes-claim"
 description = """\
 Collection of <a href="https://www.rfc-editor.org/rfc/rfc6749#section-3.3">OAuth 2.0 scopes</a> \
@@ -355,6 +389,42 @@ format = "String consisting of one or more space-separated scopes, such as <code
 
 [standard_claims.client_id]
 name = "OAuth 2.0 client"
+category = "oauth"
 link = "https://www.rfc-editor.org/rfc/rfc8693.html#name-client_id-client-identifier"
 description = "ID of the OAuth 2.0 client that has requested the token"
 format = "String with an application-specific format"
+
+# Claims categories.
+[claims_categories.basic]
+title = "Basic claims"
+description = """\
+Claims from the original <a href="https://www.rfc-editor.org/rfc/rfc7519.html">JWT RFC</a> document.\
+"""
+
+[claims_categories.openid_connect]
+title = "OpenID Connect claims"
+description = """\
+Claims related to the idenitity of the token subject defined \
+by the <a href="https://openid.net/specs/openid-connect-core-1_0.html">OpenID Connect</a> framework.\
+"""
+
+[claims_categories.authentication]
+title = "Authentication claims"
+description = """\
+Claims describing authentication undertaken by the subject in order to create an ID token \
+within the <a href="https://openid.net/specs/openid-connect-core-1_0.html">OpenID Connect</a> framework.\
+"""
+
+[claims_categories.delegation]
+title = "Delegation claims"
+description = """\
+Claims related to authorization delegation as specified in \
+the <a href="https://www.rfc-editor.org/rfc/rfc8693.html">OAuth 2.0 token exchange</a> framework.\
+"""
+
+[claims_categories.oauth]
+title = "OAuth 2.0 claims"
+description = """\
+Claims applicable to tokens issued within miltiple \
+<a href="https://www.rfc-editor.org/rfc/rfc6749.html">OAuth 2.0</a> flows.\
+"""

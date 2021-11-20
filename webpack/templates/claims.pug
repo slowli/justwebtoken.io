@@ -5,7 +5,19 @@ block pageInit
     entryPoint = 'claims';
     basePath = '..';
     pages = $pages;
-    const claims = $standardFields.standard_claims;
+    const { standard_claims: claims, claims_categories: categories } = $standardFields;
+    const claimsByCategory = Object.entries(claims)
+      .reduce(
+        (acc, [originalName, claim]) => {
+          if (claim.category in acc) {
+            acc[claim.category][originalName] = claim;
+          } else {
+            acc[claim.category] = { [originalName]: claim };
+          }
+          return acc;
+        },
+        {}
+      );
 
 block main
   p.lead.mb-4.
@@ -13,26 +25,26 @@ block main
     The dictionary below lists some of these registered claims; see <a href="https://www.iana.org/assignments/jwt/jwt.xhtml">IANA</a>
     for a complete list.
 
-  h3 Basic claims
+  each category, categoryId in categories
+    h3(id=`category-${categoryId}`)= category.title
+    p.
+      !{category.description}
 
-  p.
-    Claims from the <a href="https://www.rfc-editor.org/rfc/rfc7519.html">JWT RFC</a> document.
-
-  each claim, originalName in claims
-    div.row.mb-2
-      div(id=`claim-${originalName}`).col-md-4.col-lg-3.anchor-fix-sm
-        label: strong= claim.name
-        |
-        |
-        span(title='Name of the claim field in claims object').badge.bg-info.text-dark.fw-normal= originalName
-        if claim.link !== undefined
+    each claim, originalName in claimsByCategory[categoryId]
+      div.row.mb-2
+        div(id=`claim-${originalName}`).col-md-4.col-lg-3.anchor-fix-sm
+          label: strong= claim.name
           |
           |
-          a(href=claim.link, title='View field definition').text-decoration-none
-            i.bi.bi-book
-      div.col-md-8.col-lg-9
-        p.mb-1 !{claim.description}
-        if claim.format !== undefined
-          div.text-muted.small
-            span(class='text-decoration-underline') Format
-            | : !{claim.format}
+          span(title='Name of the claim field in claims object').badge.bg-info.text-dark.fw-normal= originalName
+          if claim.link !== undefined
+            |
+            |
+            a(href=claim.link, title='View field definition').text-decoration-none
+              i.bi.bi-book
+        div.col-md-8.col-lg-9
+          p.mb-1 !{claim.description}
+          if claim.format !== undefined
+            div.text-muted.small
+              span(class='text-decoration-underline') Format
+              | : !{claim.format}
