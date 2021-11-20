@@ -343,7 +343,7 @@ impl App {
 
     fn view_unknown_claim(field_name: &str, value: &str) -> Html {
         view_data_row(
-            html! { <label>{ field_name }</label> },
+            html! { <label class="text-decoration--md-underline">{ field_name }</label> },
             html! { <div class="mb-0"><code>{ value }</code></div> },
         )
     }

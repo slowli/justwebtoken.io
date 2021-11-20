@@ -9,7 +9,6 @@ document.addEventListener('DOMContentLoaded', () => {
   const anchors = new AnchorJS();
   anchors.options = {
     visible: 'always',
-    placement: 'left',
     icon: '¶',
     class: 'link-secondary',
     titleText: 'Link to this claim',
