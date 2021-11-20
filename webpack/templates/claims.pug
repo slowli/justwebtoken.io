@@ -23,9 +23,8 @@ block main
       div(id=`claim-${originalName}`).col-md-4.col-lg-3.anchor-fix-sm
         label: strong= claim.name
         |
-        | –
         |
-        abbr(title='Name of the claim field in claims object')= originalName
+        span(title='Name of the claim field in claims object').badge.bg-info.text-dark.fw-normal= originalName
         if claim.link !== undefined
           |
           |
