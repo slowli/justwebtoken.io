@@ -428,3 +428,7 @@ description = """\
 Claims applicable to tokens issued within miltiple \
 <a href="https://www.rfc-editor.org/rfc/rfc6749.html">OAuth 2.0</a> flows.\
 """
+
+[claims_categories.unknown]
+title = "Unknown claims"
+description = "Claims that are application-specific or not yet supported by the website"

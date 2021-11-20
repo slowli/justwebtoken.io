@@ -4,7 +4,7 @@ use jwt_compact::{jwk::JsonWebKey, UntrustedToken, ValidationError};
 use wasm_bindgen::UnwrapThrowExt;
 use yew::{html, virtual_dom::VList, Component, ComponentLink, Html, Properties, ShouldRender};
 
-use std::{collections::HashMap, fmt};
+use std::fmt;
 
 use super::{
     common::{str_to_html, view_data_row, Alert, ComponentRef},
@@ -273,13 +273,23 @@ impl App {
             .iter()
             .map(|(name, value)| (name.as_str(), Self::view_custom_claim(name, value)));
 
-        let mut claims_by_category: HashMap<&str, VList> = HashMap::new();
+        let mut claims_by_category: Vec<(&str, VList)> = Vec::new();
         for (name, html) in custom_claims_html.chain(time_claims_html) {
-            let category = StandardClaim::get(name).map_or("", |claim| claim.category);
-            claims_by_category.entry(category).or_default().push(html);
+            let category_id = StandardClaim::get(name).map_or("unknown", |claim| claim.category);
+            let entry = claims_by_category
+                .iter_mut()
+                .find(|(id, _)| *id == category_id);
+            if let Some((_, list)) = entry {
+                list.push(html);
+            } else {
+                let mut new_list = VList::new();
+                new_list.push(html);
+                claims_by_category.push((category_id, new_list));
+            }
         }
 
-        // FIXME: stable order
+        claims_by_category.sort_by_cached_key(|(id, _)| ClaimCategory::index(id));
+
         let all_claims_html: Html = claims_by_category
             .into_iter()
             .map(|(name, html)| Self::view_claim_category(name, html.into()))
