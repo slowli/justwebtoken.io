@@ -17,7 +17,7 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 base64ct = { version = "~1.1", features = ["alloc"] }
 chrono = { version = "0.4.19", default-features = false, features = ["wasmbind"] }
-ed25519-compact = { version = "0.1.9", default-features = false }
+ed25519-compact = { version = "1.0", default-features = false }
 k256 = { version = "0.9.4", default-features = false }
 once_cell = "1.8.0"
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
@@ -33,7 +33,7 @@ getrandom = { version = "0.2", features = ["custom"] }
 [dependencies.jwt-compact]
 version = "0.5.0-beta.1"
 git = "https://github.com/slowli/jwt-compact"
-rev = "022aec675d3e5f359d0c441343d3d9c07035003d"
+rev = "21e144bac8392fadfc35eb7c559fd153e89ac01f"
 default-features = false
 features = ["clock", "ed25519-compact", "with_rsa", "k256"]
 
