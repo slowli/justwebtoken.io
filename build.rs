@@ -1,6 +1,7 @@
 //! Transforms `src/claims.yml` into a function.
 
-use serde::{Deserialize, Serialize};
+use linked_hash_map::LinkedHashMap;
+use serde::Deserialize;
 
 use std::{
     collections::HashMap,
@@ -12,7 +13,7 @@ use std::{
     path::Path,
 };
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Deserialize)]
 struct Field {
     name: String,
     description: String,
@@ -23,7 +24,7 @@ impl fmt::Display for Field {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         write!(
             formatter,
-            "Field {{ name: {name:?}, description: {descr:?}, link: {link:?} }}",
+            "(Field {{ name: {name:?}, description: {descr:?}, link: {link:?} }})",
             name = self.name,
             descr = self.description.trim(),
             link = self.link
@@ -31,17 +32,47 @@ impl fmt::Display for Field {
     }
 }
 
-#[derive(Debug, Serialize, Deserialize)]
-struct StandardFields {
-    standard_headers: HashMap<String, Field>,
-    standard_claims: HashMap<String, Field>,
+#[derive(Debug, Deserialize)]
+struct Claim {
+    #[serde(flatten)]
+    field: Field,
+    category: String,
 }
 
-fn generate_fn(
+impl fmt::Display for Claim {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(
+            formatter,
+            "{{ field: {field}, category: {cat:?} }}",
+            field = self.field,
+            cat = self.category
+        )
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct ClaimCategory {
+    title: String,
+}
+
+impl fmt::Display for ClaimCategory {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, " {{ title: {title:?} }}", title = self.title)
+    }
+}
+
+#[derive(Debug, Deserialize)]
+struct StandardFields {
+    standard_headers: HashMap<String, Field>,
+    standard_claims: HashMap<String, Claim>,
+    claims_categories: LinkedHashMap<String, ClaimCategory>,
+}
+
+fn generate_map_fn<T: fmt::Display>(
     dest_file: &mut File,
     fn_name: &str,
     ty: &str,
-    fields: &HashMap<String, Field>,
+    fields: &HashMap<String, T>,
 ) -> Result<(), Box<dyn Error>> {
     writeln!(
         dest_file,
@@ -57,13 +88,40 @@ fn generate_fn(
     for (field_name, field) in fields {
         writeln!(
             dest_file,
-            "    map.insert(\"{name}\", {ty}({field}));",
+            "    map.insert({name:?}, {ty}{field});",
             name = field_name,
             ty = ty,
             field = field
         )?;
     }
     writeln!(dest_file, "    map")?;
+    writeln!(dest_file, "}}")?;
+    Ok(())
+}
+
+fn generate_slice_fn<T: fmt::Display>(
+    dest_file: &mut File,
+    fn_name: &str,
+    ty: &str,
+    fields: &LinkedHashMap<String, T>,
+) -> Result<(), Box<dyn Error>> {
+    writeln!(
+        dest_file,
+        "const fn {fn_name}() -> &'static [(&'static str, {ty})] {{",
+        fn_name = fn_name,
+        ty = ty
+    )?;
+    writeln!(dest_file, "    &[")?;
+    for (field_name, field) in fields {
+        writeln!(
+            dest_file,
+            "        ({name:?}, {ty}{field}),",
+            name = field_name,
+            ty = ty,
+            field = field
+        )?;
+    }
+    writeln!(dest_file, "    ]")?;
     writeln!(dest_file, "}}")?;
     Ok(())
 }
@@ -76,17 +134,23 @@ fn main() -> Result<(), Box<dyn Error>> {
     let dest_path = Path::new(&out_dir).join("std_maps.rs");
     let mut dest_file = File::create(dest_path)?;
 
-    generate_fn(
+    generate_map_fn(
         &mut dest_file,
         "create_headers_map",
         "StandardHeader",
         &fields.standard_headers,
     )?;
-    generate_fn(
+    generate_map_fn(
         &mut dest_file,
         "create_claims_map",
         "StandardClaim",
         &fields.standard_claims,
+    )?;
+    generate_slice_fn(
+        &mut dest_file,
+        "create_claim_categories",
+        "ClaimCategory",
+        &fields.claims_categories,
     )?;
 
     // Set up caching logic.

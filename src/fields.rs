@@ -1,6 +1,7 @@
 //! Standard claims and token headers.
 
 use once_cell::sync::Lazy;
+use wasm_bindgen::UnwrapThrowExt;
 use yew::{html, Html};
 
 use std::{collections::HashMap, fmt};
@@ -36,16 +37,21 @@ impl Field {
 }
 
 #[derive(Debug, Clone, Copy)]
-pub struct StandardClaim(pub Field);
+pub struct StandardClaim {
+    pub field: Field,
+    pub category: &'static str,
+}
 
 // Defines:
 //
-// fn create_claims_map() -> HashMap<&'static str, StandardField> { /* ... */ }
-// fn create_headers_map() -> HashMap<&'static str, StandardField> { /* ... */ }
+// fn create_claims_map() -> HashMap<&'static str, StandardClaim> { /* ... */ }
+// fn create_headers_map() -> HashMap<&'static str, StandardHeader> { /* ... */ }
+// const fn create_claim_categories() -> &'static [(&'static str, ClaimCategory)] { /* ... */ }
 include!(concat!(env!("OUT_DIR"), "/std_maps.rs"));
 
 static CLAIMS_MAP: Lazy<HashMap<&'static str, StandardClaim>> = Lazy::new(create_claims_map);
 static HEADERS_MAP: Lazy<HashMap<&'static str, StandardHeader>> = Lazy::new(create_headers_map);
+static CLAIM_CATEGORIES: &[(&str, ClaimCategory)] = create_claim_categories();
 
 impl StandardClaim {
     pub fn by_name(name: &str) -> Self {
@@ -71,5 +77,29 @@ impl StandardHeader {
 
     pub fn with_code_value(self, value: &dyn fmt::Display) -> FieldWithValue {
         self.0.with_code_value(value)
+    }
+}
+
+#[derive(Debug, Clone, Copy)]
+pub struct ClaimCategory {
+    pub title: &'static str,
+}
+
+impl ClaimCategory {
+    pub fn get(category_id: &str) -> Option<Self> {
+        CLAIM_CATEGORIES.iter().find_map(|(id, category)| {
+            if *id == category_id {
+                Some(*category)
+            } else {
+                None
+            }
+        })
+    }
+
+    pub fn index(category_id: &str) -> usize {
+        CLAIM_CATEGORIES
+            .iter()
+            .position(|(id, _)| *id == category_id)
+            .expect_throw("unknown claim category")
     }
 }
