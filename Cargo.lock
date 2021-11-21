@@ -403,7 +403,7 @@ dependencies = [
 [[package]]
 name = "jwt-compact"
 version = "0.5.0-beta.1"
-source = "git+https://github.com/slowli/jwt-compact?rev=21e144bac8392fadfc35eb7c559fd153e89ac01f#21e144bac8392fadfc35eb7c559fd153e89ac01f"
+source = "git+https://github.com/slowli/jwt-compact?rev=508982f8cc00c5b4ae2ce9cde888733e8ef8b92f#508982f8cc00c5b4ae2ce9cde888733e8ef8b92f"
 dependencies = [
  "anyhow",
  "base64ct",
@@ -414,7 +414,6 @@ dependencies = [
  "rand_core",
  "rsa",
  "serde",
- "serde_cbor",
  "serde_json",
  "sha2",
  "smallvec",
