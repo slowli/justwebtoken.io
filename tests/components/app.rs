@@ -4,7 +4,7 @@
 
 use jwt_compact::{alg::SecretBytes, UntrustedToken};
 use wasm_bindgen_test::*;
-use yew::web_sys::Element;
+use web_sys::Element;
 
 use std::collections::HashMap;
 

@@ -6,7 +6,8 @@
 use assert_matches::assert_matches;
 use wasm_bindgen::UnwrapThrowExt;
 use wasm_bindgen_test::*;
-use yew::{web_sys::Element, Callback};
+use web_sys::Element;
+use yew::Callback;
 
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 

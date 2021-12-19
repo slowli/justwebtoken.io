@@ -2,7 +2,7 @@
 
 use jwt_compact::{jwk::JsonWebKey, UntrustedToken, ValidationError};
 use wasm_bindgen::UnwrapThrowExt;
-use yew::{html, virtual_dom::VList, Component, ComponentLink, Html, Properties, ShouldRender};
+use yew::{html, html::Scope, virtual_dom::VList, Component, Context, Html, Properties};
 
 use std::fmt;
 
@@ -184,7 +184,6 @@ pub struct AppProperties {
 
 #[derive(Debug)]
 pub struct App {
-    link: ComponentLink<Self>,
     key_input: ComponentRef<KeyInput>,
     token_input: ComponentRef<TokenInput>,
     state: AppState,
@@ -306,21 +305,21 @@ impl App {
         let body_id = format!("claim-cat-{}", category_id);
         html! {
             <div class="accordion-item">
-                <h2 class="accordion-header" id=header_id.clone()>
+                <h2 class="accordion-header" id={header_id.clone()}>
                     <button
                         class="accordion-button ps-0 bg-transparent"
                         type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target=format!("#{}", body_id)
+                        data-bs-target={format!("#{}", body_id)}
                         aria-expanded="true"
-                        aria-controls=body_id.clone()>
+                        aria-controls={body_id.clone()}>
                         { title }
                     </button>
                 </h2>
                 <div
-                    id=body_id
+                    id={body_id}
                     class="accordion-collapse collapse show py-3"
-                    aria-labelledby=header_id>
+                    aria-labelledby={header_id}>
                     { claims_html }
                 </div>
             </div>
@@ -374,7 +373,7 @@ impl App {
         )
     }
 
-    fn view_no_inputs_hint(&self) -> Html {
+    fn view_no_inputs_hint(link: &Scope<Self>) -> Html {
         Alert::Info.view(
             "No key / token",
             html! {
@@ -387,7 +386,7 @@ impl App {
                         type="button"
                         class="btn btn-info"
                         title="This will also generate a symmetric verifying key"
-                        onclick=self.link.callback(|_| AppMessage::RandomToken) >
+                        onclick={link.callback(|_| AppMessage::RandomToken)} >
                         { "Generate random token" }
                     </button>
                 </>
@@ -410,17 +409,16 @@ impl Component for App {
     type Message = AppMessage;
     type Properties = AppProperties;
 
-    fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
+    fn create(ctx: &Context<Self>) -> Self {
         Self {
-            link,
             key_input: ComponentRef::default(),
             token_input: ComponentRef::default(),
             state: AppState::default(),
-            save: properties.save,
+            save: ctx.props().save,
         }
     }
 
-    fn update(&mut self, message: Self::Message) -> ShouldRender {
+    fn update(&mut self, _: &Context<Self>, message: Self::Message) -> bool {
         match message {
             AppMessage::SetKey(key) => {
                 self.state.key = key.map(|boxed| *boxed);
@@ -440,25 +438,21 @@ impl Component for App {
         true
     }
 
-    // Since this is a root component, changes are made via messages only.
-    fn change(&mut self, _: Self::Properties) -> ShouldRender {
-        false
-    }
-
-    fn view(&self) -> Html {
+    fn view(&self, ctx: &Context<Self>) -> Html {
+        let link = ctx.link();
         html! {
             <>
                 <form class="mb-4">
                     <div class="mb-3">
                         <KeyInput
-                            component_ref=self.key_input.clone()
-                            save=self.save
-                            onchange=self.link.callback(AppMessage::new_key) />
+                            component_ref={self.key_input.clone()}
+                            save={self.save}
+                            onchange={link.callback(AppMessage::new_key)} />
                     </div>
                     <TokenInput
-                        component_ref=self.token_input.clone()
-                        save=self.save
-                        onchange=self.link.callback(AppMessage::new_token) />
+                        component_ref={self.token_input.clone()}
+                        save={self.save}
+                        onchange={link.callback(AppMessage::new_token)} />
                 </form>
 
                 { match &self.state.result {
@@ -466,7 +460,7 @@ impl Component for App {
                     TokenResult::Err { err, claims: Some(claims) } =>
                         Self::view_claims(claims, Some(err)),
                     TokenResult::Err { err, claims: None } => err.view(),
-                    TokenResult::None => self.view_no_inputs_hint(),
+                    TokenResult::None => Self::view_no_inputs_hint(link),
                 }}
             </>
         }

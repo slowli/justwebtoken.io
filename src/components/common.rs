@@ -1,7 +1,7 @@
 //! Common reused components.
 
 use wasm_bindgen::UnwrapThrowExt;
-use yew::{classes, html, web_sys, Component, ComponentLink, Html};
+use yew::{classes, html, html::Scope, Component, Html};
 
 use std::{cell::RefCell, rc::Rc};
 
@@ -24,7 +24,7 @@ impl Icon {
     }
 
     pub fn view(self) -> Html {
-        html! { <i class=classes!("bi", self.icon_class())></i> }
+        html! { <i class={classes!("bi", self.icon_class())}></i> }
     }
 }
 
@@ -60,7 +60,7 @@ impl FieldWithValue {
         html! {
             <>
                 { "\u{00a0}" } // non-breakable space
-                <a href=link
+                <a href={link}
                     target="_blank"
                     class="text-decoration-none"
                     title="View field definition">
@@ -102,7 +102,11 @@ impl FieldWithValue {
 }
 
 pub fn str_to_html(html_str: &str) -> Html {
-    let div = yew::utils::document().create_element("div").unwrap();
+    let window = web_sys::window().expect_throw("cannot get Window");
+    let document = window.document().expect_throw("cannot get Document");
+    let div = document
+        .create_element("div")
+        .expect_throw("cannot create div");
     div.set_inner_html(html_str);
     Html::VRef(div.into())
 }
@@ -148,12 +152,12 @@ impl Alert {
         let top_img_classes = classes!["card-img-top", "fs-3", "text-center", text_class];
 
         html! {
-            <div class=classes!["card", "card-alert", "my-4", border_class] role="alert">
-                <div class=top_img_classes>
+            <div class={classes!["card", "card-alert", "my-4", border_class]} role="alert">
+                <div class={top_img_classes}>
                     <span class="px-2 bg-white">{ icon.view() }</span>
                 </div>
                 <div class="card-body">
-                    <h5 class=classes!["card-title", text_class]>{ title }</h5>
+                    <h5 class={classes!["card-title", text_class]}>{ title }</h5>
                     { body }
                 </div>
             </div>
@@ -163,7 +167,7 @@ impl Alert {
 
 #[derive(Debug)]
 pub struct ComponentRef<C: Component> {
-    link: Rc<RefCell<Option<ComponentLink<C>>>>,
+    link: Rc<RefCell<Option<Scope<C>>>>,
 }
 
 impl<C: Component> Default for ComponentRef<C> {
@@ -189,7 +193,7 @@ impl<C: Component> PartialEq for ComponentRef<C> {
 }
 
 impl<C: Component> ComponentRef<C> {
-    pub fn link_with(self, link: ComponentLink<C>) {
+    pub fn link_with(&self, link: Scope<C>) {
         *self.link.borrow_mut() = Some(link);
     }
 

@@ -5,9 +5,9 @@
 use base64ct::{Base64UrlUnpadded, Encoding};
 use jwt_compact::jwk::{JsonWebKey, JwkError};
 use sha2::Sha256;
-use yew::{
-    classes, html, Callback, Component, ComponentLink, Html, InputData, Properties, ShouldRender,
-};
+use wasm_bindgen::{JsCast, UnwrapThrowExt};
+use web_sys::{HtmlTextAreaElement, InputEvent};
+use yew::{classes, html, Callback, Component, Context, Html, Properties};
 
 use std::fmt;
 
@@ -188,6 +188,16 @@ pub enum KeyInputMessage {
     SetKey(String),
 }
 
+impl KeyInputMessage {
+    fn key_set(event: &InputEvent) -> Self {
+        let target = event.target().expect_throw("no target for key set event");
+        let target = target
+            .dyn_into::<HtmlTextAreaElement>()
+            .expect_throw("unexpected target for key set event");
+        Self::SetKey(target.value())
+    }
+}
+
 #[derive(Debug, Clone, Default, PartialEq, Properties)]
 pub struct KeyInputProperties {
     #[prop_or_default]
@@ -200,9 +210,7 @@ pub struct KeyInputProperties {
 
 #[derive(Debug)]
 pub struct KeyInput {
-    link: ComponentLink<Self>,
     state: KeyInputState,
-    onchange: Callback<Option<KeyInstance>>,
     state_manager: SavedStateManager,
 }
 
@@ -210,47 +218,44 @@ impl Component for KeyInput {
     type Message = KeyInputMessage;
     type Properties = KeyInputProperties;
 
-    fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
-        properties.component_ref.link_with(link.clone());
+    fn create(ctx: &Context<Self>) -> Self {
+        ctx.props().component_ref.link_with(ctx.link().clone());
 
         let (state_manager, init_state) =
-            SavedStateManager::new(Self::STORAGE_KEY, properties.save);
+            SavedStateManager::new(Self::STORAGE_KEY, ctx.props().save);
 
         let mut this = Self {
-            link,
             state: KeyInputState::default(),
-            onchange: properties.onchange,
             state_manager,
         };
 
         if let Some(key) = init_state {
-            this.update(KeyInputMessage::SetKey(key));
+            this.update(ctx, KeyInputMessage::SetKey(key));
         }
         this
     }
 
-    fn update(&mut self, message: Self::Message) -> ShouldRender {
+    fn update(&mut self, ctx: &Context<Self>, message: Self::Message) -> bool {
         match message {
             KeyInputMessage::SetKey(key) => {
                 self.state_manager.save(&key);
                 let (new_state, maybe_key) = KeyInputState::new(key);
                 self.state = new_state;
-                self.onchange.emit(maybe_key);
+                ctx.props().onchange.emit(maybe_key);
             }
         }
         true
     }
 
-    fn change(&mut self, properties: Self::Properties) -> ShouldRender {
-        properties.component_ref.link_with(self.link.clone());
-        self.onchange = properties.onchange;
+    fn changed(&mut self, ctx: &Context<Self>) -> bool {
+        ctx.props().component_ref.link_with(ctx.link().clone());
 
-        self.state_manager.set_save_flag(properties.save);
+        self.state_manager.set_save_flag(ctx.props().save);
         self.state_manager.save(&self.state.raw_key);
         false
     }
 
-    fn view(&self) -> Html {
+    fn view(&self, ctx: &Context<Self>) -> Html {
         let mut control_classes = classes![
             "form-control",
             "mb-1",
@@ -263,6 +268,7 @@ impl Component for KeyInput {
             control_classes.push("is-invalid");
         }
 
+        let link = ctx.link();
         let row = view_wide_data_row(
             html! {
                 <label for="key">
@@ -273,14 +279,12 @@ impl Component for KeyInput {
                 <>
                     <textarea
                         id="key"
-                        class=control_classes
+                        class={control_classes}
                         placeholder="Encoded key"
                         autocomplete="off"
                         spellcheck="false"
-                        value=self.state.raw_key.clone()
-                        oninput=self.link.callback(move |e: InputData| {
-                            KeyInputMessage::SetKey(e.value)
-                        }) >
+                        value={self.state.raw_key.clone()}
+                        oninput={link.callback(|evt| KeyInputMessage::key_set(&evt))} >
                         { &self.state.raw_key }
                     </textarea>
 
