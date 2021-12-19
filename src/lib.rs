@@ -9,7 +9,7 @@
 )]
 
 use wasm_bindgen::prelude::*;
-use yew::{utils::document, ComponentLink};
+use yew::AppHandle;
 
 // Modules are public for the sake of integration testing.
 pub mod components;
@@ -22,7 +22,7 @@ use crate::components::{App, AppMessage, AppProperties};
 #[wasm_bindgen]
 #[derive(Debug)]
 pub struct AppLink {
-    inner: ComponentLink<App>,
+    inner: AppHandle<App>,
 }
 
 #[wasm_bindgen]
@@ -40,12 +40,12 @@ impl AppLink {
 
 #[wasm_bindgen(js_name = runApp)]
 pub fn run_app(save: bool) -> AppLink {
-    yew::initialize();
-    let element = document()
+    let window = web_sys::window().expect_throw("no Window");
+    let document = window.document().expect_throw("no Document");
+    let element = document
         .query_selector("#app-root")
         .expect_throw("cannot get app root node")
         .expect_throw("cannot unwrap body node");
-    let app = yew::App::<App>::new().mount_with_props(element, AppProperties { save });
-    yew::run_loop();
+    let app = yew::start_app_with_props_in_element::<App>(element, AppProperties { save });
     AppLink { inner: app }
 }

@@ -2,9 +2,9 @@
 
 use base64ct::{Base64UrlUnpadded, Encoding};
 use jwt_compact::{Header, ParseError, UntrustedToken};
-use yew::{
-    classes, html, Callback, Component, ComponentLink, Html, InputData, Properties, ShouldRender,
-};
+use wasm_bindgen::{JsCast, UnwrapThrowExt};
+use web_sys::{HtmlTextAreaElement, InputEvent};
+use yew::{classes, html, Callback, Component, Context, Html, Properties};
 
 use super::common::{view_wide_data_row, ComponentRef, SavedStateManager};
 use crate::fields::{Field, StandardHeader};
@@ -109,9 +109,7 @@ pub struct TokenInputProperties {
 /// Token input + corresponding diagnostic information.
 #[derive(Debug)]
 pub struct TokenInput {
-    link: ComponentLink<Self>,
     state: TokenInputState,
-    onchange: Callback<Option<UntrustedToken<'static>>>,
     state_manager: SavedStateManager,
 }
 
@@ -120,50 +118,57 @@ pub enum TokenInputMessage {
     SetToken(String),
 }
 
+impl TokenInputMessage {
+    fn token_set(event: &InputEvent) -> Self {
+        let target = event.target().expect_throw("no target for token set event");
+        let target = target
+            .dyn_into::<HtmlTextAreaElement>()
+            .expect_throw("unexpected target for token set event");
+        Self::SetToken(target.value())
+    }
+}
+
 impl Component for TokenInput {
     type Message = TokenInputMessage;
     type Properties = TokenInputProperties;
 
-    fn create(properties: Self::Properties, link: ComponentLink<Self>) -> Self {
-        properties.component_ref.link_with(link.clone());
+    fn create(ctx: &Context<Self>) -> Self {
+        ctx.props().component_ref.link_with(ctx.link().clone());
 
         let (state_manager, init_state) =
-            SavedStateManager::new(Self::STORAGE_KEY, properties.save);
+            SavedStateManager::new(Self::STORAGE_KEY, ctx.props().save);
 
         let mut this = Self {
-            link,
             state: TokenInputState::default(),
-            onchange: properties.onchange,
             state_manager,
         };
         if let Some(token) = init_state {
-            this.update(TokenInputMessage::SetToken(token));
+            this.update(ctx, TokenInputMessage::SetToken(token));
         }
         this
     }
 
-    fn update(&mut self, message: Self::Message) -> ShouldRender {
+    fn update(&mut self, ctx: &Context<Self>, message: Self::Message) -> bool {
         match message {
             TokenInputMessage::SetToken(token) => {
                 self.state_manager.save(&token);
                 let (new_state, maybe_token) = TokenInputState::new(token);
                 self.state = new_state;
-                self.onchange.emit(maybe_token);
+                ctx.props().onchange.emit(maybe_token);
             }
         }
         true
     }
 
-    fn change(&mut self, properties: Self::Properties) -> ShouldRender {
-        properties.component_ref.link_with(self.link.clone());
-        self.onchange = properties.onchange;
+    fn changed(&mut self, ctx: &Context<Self>) -> bool {
+        ctx.props().component_ref.link_with(ctx.link().clone());
 
-        self.state_manager.set_save_flag(properties.save);
+        self.state_manager.set_save_flag(ctx.props().save);
         self.state_manager.save(&self.state.raw_token);
         false
     }
 
-    fn view(&self) -> Html {
+    fn view(&self, ctx: &Context<Self>) -> Html {
         let parse_res = self.state.parse_result.as_ref();
         let mut control_classes = classes![
             "form-control",
@@ -176,6 +181,7 @@ impl Component for TokenInput {
             control_classes.push("is-invalid");
         }
 
+        let link = ctx.link();
         let row = view_wide_data_row(
             html! {
                 <label for="token">
@@ -186,14 +192,12 @@ impl Component for TokenInput {
                 <>
                     <textarea
                         id="token"
-                        class=control_classes
+                        class={control_classes}
                         placeholder="JSON web token"
                         autocomplete="off"
                         spellcheck="false"
-                        value=self.state.raw_token.clone()
-                        oninput=self.link.callback(move |e: InputData| {
-                            TokenInputMessage::SetToken(e.value)
-                        }) >
+                        value={self.state.raw_token.clone()}
+                        oninput={link.callback(|evt| TokenInputMessage::token_set(&evt))} >
                         { &self.state.raw_token }
                     </textarea>
 

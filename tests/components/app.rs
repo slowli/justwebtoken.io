@@ -4,7 +4,7 @@
 
 use jwt_compact::{alg::SecretBytes, UntrustedToken};
 use wasm_bindgen_test::*;
-use yew::web_sys::Element;
+use web_sys::Element;
 
 use std::collections::HashMap;
 
@@ -52,7 +52,7 @@ fn claims_are_displayed_for_correct_token() {
     let claims = get_decoded_claims(&rig.root_element);
     assert_eq!(claims.len(), 3, "{:?}", claims);
     let exp = extract_main_value(&claims["Expiration timestamp"]);
-    assert_eq!(exp, "2011-03-22 18:43:00 UTC");
+    assert_eq!(exp, "2011-03-22 18:43:00 UTC Token has expired");
     let issuer = extract_main_value(&claims["Issuer"]);
     assert_eq!(issuer, "\"joe\"");
 }

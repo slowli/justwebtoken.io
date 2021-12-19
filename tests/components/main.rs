@@ -3,7 +3,8 @@
 use const_decoder::Decoder;
 use wasm_bindgen::{JsCast, UnwrapThrowExt};
 use wasm_bindgen_test::wasm_bindgen_test_configure;
-use yew::{web_sys::Element, Component, ComponentLink};
+use web_sys::Element;
+use yew::{AppHandle, Component};
 
 use std::collections::HashMap;
 
@@ -30,7 +31,7 @@ const K256_JWK: &str = r#"
 
 struct TestRigBase<C: Component> {
     root_element: Element,
-    component: ComponentLink<C>,
+    component: AppHandle<C>,
 }
 
 impl<C: Component> Drop for TestRigBase<C> {
@@ -46,12 +47,11 @@ impl<C: Component> Drop for TestRigBase<C> {
 
 impl<C: Component> TestRigBase<C> {
     fn new(props: C::Properties) -> Self {
-        yew::initialize();
-        let document = yew::utils::document();
+        let document = web_sys::window().unwrap().document().unwrap();
         let div = document.create_element("div").unwrap();
         document.body().unwrap().append_with_node_1(&div).unwrap();
 
-        let component = yew::App::<C>::new().mount_with_props(div.clone(), props);
+        let component = yew::start_app_with_props_in_element::<C>(div.clone(), props);
 
         Self {
             root_element: div,

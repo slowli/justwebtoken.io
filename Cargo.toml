@@ -18,14 +18,14 @@ crate-type = ["cdylib", "rlib"]
 base64ct = { version = "~1.1", features = ["alloc"] }
 chrono = { version = "0.4.19", default-features = false, features = ["wasmbind"] }
 ed25519-compact = { version = "1.0", default-features = false }
-k256 = { version = "0.9.4", default-features = false }
-once_cell = "1.8.0"
+k256 = { version = "0.10", default-features = false }
+once_cell = "1.9.0"
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
-serde_cbor = { version = "0.11.1", features = ["std"] } # fixes compilation error
-sha2 = { version = "0.9", default-features = false }
+sha2 = { version = "0.10", default-features = false }
 uuid = "0.8"
 wasm-bindgen = "0.2.75"
-yew = "0.18.0"
+web-sys = { version = "0.3.55", features = ["NodeList"] }
+yew = "0.19.3"
 
 # Set up `getrandom` crate to use the host JS CSPRNG.
 getrandom = { version = "0.2", features = ["custom"] }
@@ -33,7 +33,7 @@ getrandom = { version = "0.2", features = ["custom"] }
 [dependencies.jwt-compact]
 version = "0.5.0-beta.1"
 git = "https://github.com/slowli/jwt-compact"
-rev = "508982f8cc00c5b4ae2ce9cde888733e8ef8b92f"
+rev = "5459edd60ad7d11d5ecfa4f44704440caeb7e885"
 default-features = false
 features = ["clock", "ed25519-compact", "with_rsa", "k256"]
 
@@ -41,7 +41,6 @@ features = ["clock", "ed25519-compact", "with_rsa", "k256"]
 assert_matches = "1.5.0"
 const-decoder = "0.2.0"
 wasm-bindgen-test = "0.3.28"
-web-sys = { version = "0.3.55", features = ["NodeList"] }
 
 [build-dependencies]
 linked-hash-map = { version = "0.5.4", features = ["serde_impl"] }
