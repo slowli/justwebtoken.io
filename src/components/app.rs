@@ -1,13 +1,13 @@
 //! Root application component.
 
-use jwt_compact::{jwk::JsonWebKey, UntrustedToken, ValidationError};
+use jwt_compact::{jwk::JsonWebKey, TimeOptions, UntrustedToken, ValidationError};
 use wasm_bindgen::UnwrapThrowExt;
 use yew::{html, html::Scope, virtual_dom::VList, Component, Context, Html, Properties};
 
 use std::fmt;
 
 use super::{
-    common::{str_to_html, view_data_row, Alert, ComponentRef},
+    common::{str_to_html, view_data_row, Alert, ComponentRef, Icon},
     key_input::{KeyInput, KeyInputMessage},
     token_input::{TokenInput, TokenInputMessage},
 };
@@ -255,15 +255,30 @@ impl App {
     fn view_decoded_claims(claims: &GenericClaims) -> Html {
         let mut time_claims_html = Vec::with_capacity(3);
         if let Some(expiration) = &claims.expiration {
-            let html = Self::view_claim("exp", StandardClaim::by_name("exp"), expiration, false);
+            let err = claims.validate_expiration(&TimeOptions::default()).err();
+            let html = Self::view_claim(
+                "exp",
+                StandardClaim::by_name("exp"),
+                expiration,
+                false,
+                err.as_ref(),
+            );
             time_claims_html.push(("exp", html));
         }
         if let Some(issued_at) = &claims.issued_at {
-            let html = Self::view_claim("iat", StandardClaim::by_name("iat"), issued_at, false);
+            let html =
+                Self::view_claim("iat", StandardClaim::by_name("iat"), issued_at, false, None);
             time_claims_html.push(("iat", html));
         }
         if let Some(not_before) = &claims.not_before {
-            let html = Self::view_claim("nbf", StandardClaim::by_name("nbf"), not_before, false);
+            let err = claims.validate_maturity(&TimeOptions::default()).err();
+            let html = Self::view_claim(
+                "nbf",
+                StandardClaim::by_name("nbf"),
+                not_before,
+                false,
+                err.as_ref(),
+            );
             time_claims_html.push(("nbf", html));
         }
 
@@ -331,11 +346,21 @@ impl App {
         claim: StandardClaim,
         value: &dyn fmt::Display,
         show_as_code: bool,
+        err: Option<&ValidationError>,
     ) -> Html {
+        let err = err.map_or_else(Html::default, |err| {
+            html! {
+                <span class="ms-2 badge bg-warning text-dark">
+                    { Icon::Warning.view() }
+                    { " " }
+                    { err }
+                </span>
+            }
+        });
         let value = if show_as_code {
-            html! { <code>{ value }</code> }
+            html! { <><code>{ value }</code>{ err }</> }
         } else {
-            html! { { value } }
+            html! { <>{ value }{ err }</> }
         };
         claim.field.with_html_value(value).view_as_claim(field_name)
     }
@@ -369,7 +394,7 @@ impl App {
         let value_str = serde_json::to_string(value).unwrap();
         StandardClaim::get(field_name).map_or_else(
             || Self::view_unknown_claim(field_name, &value_str),
-            |claim| Self::view_claim(field_name, claim, &value_str, true),
+            |claim| Self::view_claim(field_name, claim, &value_str, true, None),
         )
     }
 
