@@ -462,8 +462,9 @@ dependencies = [
 
 [[package]]
 name = "jwt-compact"
-version = "0.5.0-beta.1"
-source = "git+https://github.com/slowli/jwt-compact?rev=5459edd60ad7d11d5ecfa4f44704440caeb7e885#5459edd60ad7d11d5ecfa4f44704440caeb7e885"
+version = "0.5.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "74d2c0129a64e2020a80478019e1094b4a103548244537859b99832467ce4a4c"
 dependencies = [
  "anyhow",
  "base64ct",

@@ -31,9 +31,7 @@ yew = "0.19.3"
 getrandom = { version = "0.2", features = ["custom"] }
 
 [dependencies.jwt-compact]
-version = "0.5.0-beta.1"
-git = "https://github.com/slowli/jwt-compact"
-rev = "5459edd60ad7d11d5ecfa4f44704440caeb7e885"
+version = "0.5.0"
 default-features = false
 features = ["clock", "ed25519-compact", "with_rsa", "k256"]
 
