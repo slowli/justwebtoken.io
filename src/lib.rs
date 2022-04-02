@@ -5,7 +5,8 @@
 #![allow(
     clippy::non_ascii_literal,
     clippy::module_name_repetitions,
-    clippy::must_use_candidate
+    clippy::must_use_candidate,
+    clippy::unused_unit
 )]
 
 use wasm_bindgen::prelude::*;
