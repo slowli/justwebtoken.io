@@ -22,7 +22,7 @@ k256 = { version = "0.10", default-features = false }
 once_cell = "1.10.0"
 serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 sha2 = { version = "0.10", default-features = false }
-uuid = "0.8"
+uuid = "1.0"
 wasm-bindgen = "0.2.75"
 web-sys = { version = "0.3.55", features = ["NodeList"] }
 yew = "0.19.3"
