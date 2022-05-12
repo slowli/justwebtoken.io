@@ -111,8 +111,8 @@ impl KeyInstance {
         getrandom::getrandom(&mut bytes).expect_throw("cannot access CSPRNG");
 
         uuid::Builder::from_bytes(bytes)
-            .set_variant(uuid::Variant::RFC4122)
-            .set_version(uuid::Version::Random)
-            .build()
+            .with_variant(uuid::Variant::RFC4122)
+            .with_version(uuid::Version::Random)
+            .into_uuid()
     }
 }
