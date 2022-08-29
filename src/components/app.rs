@@ -176,7 +176,7 @@ impl AppMessage {
     }
 }
 
-#[derive(Debug, Clone, Default, PartialEq, Properties)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Properties)]
 pub struct AppProperties {
     #[prop_or_default]
     pub save: bool,
