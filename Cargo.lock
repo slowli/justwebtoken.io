@@ -221,12 +221,18 @@ dependencies = [
 
 [[package]]
 name = "ed25519-compact"
-version = "1.0.11"
+version = "1.0.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "24e1f30f0312ac83726c1197abeacd91c9557f8a623e904a009ae6bc529ae8d8"
+checksum = "e18997d4604542d0736fae2c5ad6de987f0a50530cbcc14a7ce5a685328a252d"
 dependencies = [
  "getrandom",
 ]
+
+[[package]]
+name = "ed25519-compact"
+version = "2.0.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1f2d21333b679bbbac680b3eb45c86937e42f69277028f4e97b599b80b86c253"
 
 [[package]]
 name = "elliptic-curve"
@@ -452,7 +458,7 @@ dependencies = [
  "base64ct",
  "chrono",
  "const-decoder",
- "ed25519-compact",
+ "ed25519-compact 2.0.2",
  "getrandom",
  "jwt-compact",
  "k256",
@@ -479,7 +485,7 @@ dependencies = [
  "base64ct",
  "chrono",
  "digest 0.9.0",
- "ed25519-compact",
+ "ed25519-compact 1.0.16",
  "hmac 0.12.1",
  "k256",
  "rand_core",
