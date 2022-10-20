@@ -21,7 +21,7 @@ const distPath = path.resolve(__dirname, 'dist');
 function getDependencyInfo(dependencyName) {
   const packageInfo = cargoLockfile.package.find(({ name }) => name === dependencyName);
 
-  const gitRegex = /^git.*github\.com\/(?<repo>.*)\?.*#(?<rev>[0-9a-f]{40})$/;
+  const gitRegex = /^git.*github\.com\/(?<repo>.*)\?.*#(?<rev>[\da-f]{40})$/;
   const gitMatch = packageInfo.source?.match(gitRegex);
   const rev = gitMatch?.groups?.rev;
   const rawGithubRepo = gitMatch?.groups?.repo;
@@ -36,14 +36,13 @@ function getDependencyInfo(dependencyName) {
   };
 }
 
-// TODO: get this info in CD builds
 function getGitInfo() {
   const gitOutput = execSync('git status --porcelain=v2 --branch', {
     encoding: 'utf8',
   });
   const gitOutputLines = gitOutput.split('\n');
   const commitLine = gitOutputLines.find((line) => line.startsWith('# branch.oid'));
-  const commitHash = commitLine.match(/\b(?<hash>[0-9a-f]{40})$/).groups.hash;
+  const commitHash = commitLine.match(/\b(?<hash>[\da-f]{40})$/).groups.hash;
   const isDirty = gitOutputLines.some((line) => line.startsWith('1 ') || line.startsWith('2 '));
   return { commitHash, isDirty };
 }
