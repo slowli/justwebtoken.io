@@ -116,9 +116,9 @@ dependencies = [
 
 [[package]]
 name = "const-decoder"
-version = "0.2.0"
+version = "0.3.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "302d8c759518abbeeb6ed010119fc0bfdfb093077a9e476876ede76ce9e79604"
+checksum = "5241cd7938b1b415942e943ea96f615953d500b50347b505b0b507080bad5a6f"
 
 [[package]]
 name = "const-oid"
