@@ -153,7 +153,7 @@ to the <code>given_name</code> claim.\
 format = "String such as <code>Mike</code>"
 
 [standard_claims.preferred_username]
-name = "Nickname"
+name = "Preferred username"
 category = "openid_connect"
 link = "https://openid.net/specs/openid-connect-core-1_0.html#StandardClaims"
 description = """\
