@@ -316,8 +316,8 @@ impl App {
     fn view_claim_category(category_id: &str, claims_html: Html) -> Html {
         let title =
             ClaimCategory::get(category_id).map_or("Other claims", |category| category.title);
-        let header_id = format!("claim-cat-{}-head", category_id);
-        let body_id = format!("claim-cat-{}", category_id);
+        let header_id = format!("claim-cat-{category_id}-head");
+        let body_id = format!("claim-cat-{category_id}");
         html! {
             <div class="accordion-item">
                 <h2 class="accordion-header" id={header_id.clone()}>
@@ -325,7 +325,7 @@ impl App {
                         class="accordion-button ps-0 bg-transparent"
                         type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target={format!("#{}", body_id)}
+                        data-bs-target={format!("#{body_id}")}
                         aria-expanded="true"
                         aria-controls={body_id.clone()}>
                         { title }

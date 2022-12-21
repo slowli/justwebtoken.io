@@ -4,7 +4,7 @@ use const_decoder::Decoder;
 use wasm_bindgen::{JsCast, UnwrapThrowExt};
 use wasm_bindgen_test::wasm_bindgen_test_configure;
 use web_sys::Element;
-use yew::{AppHandle, Component};
+use yew::{AppHandle, Component, Renderer};
 
 use std::collections::HashMap;
 
@@ -51,7 +51,7 @@ impl<C: Component> TestRigBase<C> {
         let div = document.create_element("div").unwrap();
         document.body().unwrap().append_with_node_1(&div).unwrap();
 
-        let component = yew::start_app_with_props_in_element::<C>(div.clone(), props);
+        let component = Renderer::<C>::with_root_and_props(div.clone(), props).render();
 
         Self {
             root_element: div,
