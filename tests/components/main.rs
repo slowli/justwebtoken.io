@@ -1,12 +1,13 @@
 //! Tests related to components.
 
 use const_decoder::Decoder;
+use gloo_timers::future::sleep;
 use wasm_bindgen::{JsCast, UnwrapThrowExt};
 use wasm_bindgen_test::wasm_bindgen_test_configure;
 use web_sys::Element;
 use yew::{AppHandle, Component, Renderer};
 
-use std::collections::HashMap;
+use std::{collections::HashMap, time::Duration};
 
 mod app;
 mod key_input;
@@ -59,8 +60,9 @@ impl<C: Component> TestRigBase<C> {
         }
     }
 
-    fn send_message(&self, message: C::Message) {
+    async fn send_message(&self, message: C::Message) {
         self.component.send_message(message);
+        sleep(Duration::ZERO).await; // Wait until the message is processed
     }
 }
 

@@ -58,12 +58,13 @@ impl TestRig {
 }
 
 #[wasm_bindgen_test]
-fn correct_key() {
+async fn correct_key() {
     const KEY_THUMBPRINT: &str = "WXjRM2dXofF2PGP339yJXhia89VsAQRBMZA5_lWuYFY";
 
     let rig = TestRig::new();
     rig.base
-        .send_message(KeyInputMessage::SetKey(K256_JWK.to_owned()));
+        .send_message(KeyInputMessage::SetKey(K256_JWK.to_owned()))
+        .await;
 
     assert_matches!(rig.take_received_key(), KeyInstance::K256(_));
 
@@ -75,10 +76,11 @@ fn correct_key() {
 }
 
 #[wasm_bindgen_test]
-fn incorrect_key_serialization() {
+async fn incorrect_key_serialization() {
     let rig = TestRig::new();
     rig.base
-        .send_message(KeyInputMessage::SetKey("bogus".to_owned()));
+        .send_message(KeyInputMessage::SetKey("bogus".to_owned()))
+        .await;
 
     rig.assert_no_received_key();
 
@@ -92,12 +94,13 @@ fn incorrect_key_serialization() {
 /// If the key can be parsed, but has invalid type, both feedback and key attributes
 /// should be displayed.
 #[wasm_bindgen_test]
-fn unsupported_key_type() {
+async fn unsupported_key_type() {
     const KEY: &str = r#"{ "crv": "secp256r1", "kty": "EC", "x": "", "y": "" }"#;
 
     let rig = TestRig::new();
     rig.base
-        .send_message(KeyInputMessage::SetKey(KEY.to_owned()));
+        .send_message(KeyInputMessage::SetKey(KEY.to_owned()))
+        .await;
 
     rig.assert_no_received_key();
 

@@ -56,10 +56,11 @@ impl TestRig {
 }
 
 #[wasm_bindgen_test]
-fn correct_token() {
+async fn correct_token() {
     let rig = TestRig::new();
     rig.base
-        .send_message(TokenInputMessage::SetToken(HS256_TOKEN.to_owned()));
+        .send_message(TokenInputMessage::SetToken(HS256_TOKEN.to_owned()))
+        .await;
 
     let received_token = rig.take_received_token();
     assert_eq!(received_token.algorithm(), "HS256");
@@ -72,10 +73,11 @@ fn correct_token() {
 }
 
 #[wasm_bindgen_test]
-fn incorrect_token_serialization() {
+async fn incorrect_token_serialization() {
     let rig = TestRig::new();
     rig.base
-        .send_message(TokenInputMessage::SetToken("!!!".to_owned()));
+        .send_message(TokenInputMessage::SetToken("!!!".to_owned()))
+        .await;
 
     rig.assert_no_received_token();
 
