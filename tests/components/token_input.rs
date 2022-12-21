@@ -10,11 +10,10 @@ use yew::Callback;
 
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
+use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase, HS256_TOKEN};
 use justwebtoken_io::components::token_input::{
     TokenInput, TokenInputMessage, TokenInputProperties,
 };
-
-use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase, HS256_TOKEN};
 
 struct TestRig {
     base: TestRigBase<TokenInput>,
@@ -47,7 +46,7 @@ impl TestRig {
 
     fn assert_no_received_token(&self) {
         if let Some(token) = &*self.received_token.borrow() {
-            panic!("Unexpected received token: {:?}", token);
+            panic!("Unexpected received token: {token:?}");
         }
     }
 
@@ -57,10 +56,11 @@ impl TestRig {
 }
 
 #[wasm_bindgen_test]
-fn correct_token() {
+async fn correct_token() {
     let rig = TestRig::new();
     rig.base
-        .send_message(TokenInputMessage::SetToken(HS256_TOKEN.to_owned()));
+        .send_message(TokenInputMessage::SetToken(HS256_TOKEN.to_owned()))
+        .await;
 
     let received_token = rig.take_received_token();
     assert_eq!(received_token.algorithm(), "HS256");
@@ -73,20 +73,17 @@ fn correct_token() {
 }
 
 #[wasm_bindgen_test]
-fn incorrect_token_serialization() {
+async fn incorrect_token_serialization() {
     let rig = TestRig::new();
     rig.base
-        .send_message(TokenInputMessage::SetToken("!!!".to_owned()));
+        .send_message(TokenInputMessage::SetToken("!!!".to_owned()))
+        .await;
 
     rig.assert_no_received_token();
 
     let rows = rig.rows();
-    assert!(!rows.contains_key("Algorithm"), "{:?}", rows);
+    assert!(!rows.contains_key("Algorithm"), "{rows:?}");
 
     let feedback = extract_feedback(&rows["Token"]);
-    assert!(
-        feedback.contains("Error deserializing token"),
-        "{}",
-        feedback
-    );
+    assert!(feedback.contains("Error deserializing token"), "{feedback}");
 }

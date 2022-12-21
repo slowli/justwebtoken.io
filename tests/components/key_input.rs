@@ -11,12 +11,11 @@ use yew::Callback;
 
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
+use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase, K256_JWK};
 use justwebtoken_io::{
     components::key_input::{KeyInput, KeyInputMessage, KeyInputProperties},
     keys::KeyInstance,
 };
-
-use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase, K256_JWK};
 
 struct TestRig {
     base: TestRigBase<KeyInput>,
@@ -49,7 +48,7 @@ impl TestRig {
 
     fn assert_no_received_key(&self) {
         if let Some(key) = &*self.received_key.borrow() {
-            panic!("Unexpected received key: {:?}", key);
+            panic!("Unexpected received key: {key:?}");
         }
     }
 
@@ -59,12 +58,13 @@ impl TestRig {
 }
 
 #[wasm_bindgen_test]
-fn correct_key() {
+async fn correct_key() {
     const KEY_THUMBPRINT: &str = "WXjRM2dXofF2PGP339yJXhia89VsAQRBMZA5_lWuYFY";
 
     let rig = TestRig::new();
     rig.base
-        .send_message(KeyInputMessage::SetKey(K256_JWK.to_owned()));
+        .send_message(KeyInputMessage::SetKey(K256_JWK.to_owned()))
+        .await;
 
     assert_matches!(rig.take_received_key(), KeyInstance::K256(_));
 
@@ -76,29 +76,31 @@ fn correct_key() {
 }
 
 #[wasm_bindgen_test]
-fn incorrect_key_serialization() {
+async fn incorrect_key_serialization() {
     let rig = TestRig::new();
     rig.base
-        .send_message(KeyInputMessage::SetKey("bogus".to_owned()));
+        .send_message(KeyInputMessage::SetKey("bogus".to_owned()))
+        .await;
 
     rig.assert_no_received_key();
 
     let rows = rig.rows();
-    assert!(!rows.contains_key("Type"), "{:?}", rows);
+    assert!(!rows.contains_key("Type"), "{rows:?}");
 
     let feedback = extract_feedback(&rows["Verifying key"]);
-    assert!(feedback.contains("expected value"), "{}", feedback);
+    assert!(feedback.contains("expected value"), "{feedback}");
 }
 
 /// If the key can be parsed, but has invalid type, both feedback and key attributes
 /// should be displayed.
 #[wasm_bindgen_test]
-fn unsupported_key_type() {
+async fn unsupported_key_type() {
     const KEY: &str = r#"{ "crv": "secp256r1", "kty": "EC", "x": "", "y": "" }"#;
 
     let rig = TestRig::new();
     rig.base
-        .send_message(KeyInputMessage::SetKey(KEY.to_owned()));
+        .send_message(KeyInputMessage::SetKey(KEY.to_owned()))
+        .await;
 
     rig.assert_no_received_key();
 
@@ -110,7 +112,6 @@ fn unsupported_key_type() {
     let feedback = extract_feedback(&rows["Verifying key"]);
     assert!(
         feedback.contains("`crv` has unexpected value"),
-        "{}",
-        feedback
+        "{feedback}"
     );
 }

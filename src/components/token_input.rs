@@ -134,7 +134,6 @@ impl Component for TokenInput {
 
     fn create(ctx: &Context<Self>) -> Self {
         ctx.props().component_ref.link_with(ctx.link().clone());
-
         let (state_manager, init_state) =
             SavedStateManager::new(Self::STORAGE_KEY, ctx.props().save);
 
@@ -160,9 +159,8 @@ impl Component for TokenInput {
         true
     }
 
-    fn changed(&mut self, ctx: &Context<Self>) -> bool {
+    fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
         ctx.props().component_ref.link_with(ctx.link().clone());
-
         self.state_manager.set_save_flag(ctx.props().save);
         self.state_manager.save(&self.state.raw_token);
         false

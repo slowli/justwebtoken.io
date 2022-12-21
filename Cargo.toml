@@ -25,7 +25,7 @@ sha2 = { version = "0.10", default-features = false }
 uuid = "1.2.1"
 wasm-bindgen = "0.2.75"
 web-sys = { version = "0.3.55", features = ["NodeList"] }
-yew = "0.19.3"
+yew = { version = "0.20.0", features = ["csr"] }
 
 # Set up `getrandom` crate to use the host JS CSPRNG.
 getrandom = { version = "0.2", features = ["custom"] }
@@ -38,6 +38,7 @@ features = ["clock", "ed25519-compact", "with_rsa", "k256"]
 [dev-dependencies]
 assert_matches = "1.5.0"
 const-decoder = "0.3.0"
+gloo-timers = { version = "0.2.5", features = ["futures"] }
 wasm-bindgen-test = "0.3.28"
 
 [build-dependencies]

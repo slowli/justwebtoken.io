@@ -10,7 +10,7 @@
 )]
 
 use wasm_bindgen::prelude::*;
-use yew::AppHandle;
+use yew::{AppHandle, Renderer};
 
 // Modules are public for the sake of integration testing.
 pub mod components;
@@ -47,6 +47,6 @@ pub fn run_app(save: bool) -> AppLink {
         .query_selector("#app-root")
         .expect_throw("cannot get app root node")
         .expect_throw("cannot unwrap body node");
-    let app = yew::start_app_with_props_in_element::<App>(element, AppProperties { save });
+    let app = Renderer::<App>::with_root_and_props(element, AppProperties { save }).render();
     AppLink { inner: app }
 }

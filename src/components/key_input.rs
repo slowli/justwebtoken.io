@@ -48,11 +48,11 @@ impl ExtendedKeyType {
 impl fmt::Display for ExtendedKeyType {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            Self::Rsa { bits } => write!(formatter, "RSA ({} bits)", bits),
+            Self::Rsa { bits } => write!(formatter, "RSA ({bits} bits)"),
             Self::EllipticCurve { curve_name } => {
-                write!(formatter, "Elliptic curve ({})", curve_name)
+                write!(formatter, "Elliptic curve ({curve_name})")
             }
-            Self::Symmetric { bytes } => write!(formatter, "Symmetric ({} bytes)", bytes),
+            Self::Symmetric { bytes } => write!(formatter, "Symmetric ({bytes} bytes)"),
         }
     }
 }
@@ -220,7 +220,6 @@ impl Component for KeyInput {
 
     fn create(ctx: &Context<Self>) -> Self {
         ctx.props().component_ref.link_with(ctx.link().clone());
-
         let (state_manager, init_state) =
             SavedStateManager::new(Self::STORAGE_KEY, ctx.props().save);
 
@@ -228,7 +227,6 @@ impl Component for KeyInput {
             state: KeyInputState::default(),
             state_manager,
         };
-
         if let Some(key) = init_state {
             this.update(ctx, KeyInputMessage::SetKey(key));
         }
@@ -247,9 +245,8 @@ impl Component for KeyInput {
         true
     }
 
-    fn changed(&mut self, ctx: &Context<Self>) -> bool {
+    fn changed(&mut self, ctx: &Context<Self>, _old_props: &Self::Properties) -> bool {
         ctx.props().component_ref.link_with(ctx.link().clone());
-
         self.state_manager.set_save_flag(ctx.props().save);
         self.state_manager.save(&self.state.raw_key);
         false

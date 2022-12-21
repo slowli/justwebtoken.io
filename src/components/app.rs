@@ -11,9 +11,8 @@ use super::{
     key_input::{KeyInput, KeyInputMessage},
     token_input::{TokenInput, TokenInputMessage},
 };
-use crate::fields::ClaimCategory;
 use crate::{
-    fields::StandardClaim,
+    fields::{ClaimCategory, StandardClaim},
     keys::{GenericClaims, GenericToken, KeyInstance},
 };
 
@@ -118,16 +117,12 @@ impl Default for AppState {
 
 impl AppState {
     fn update(&mut self) {
-        let token = if let Some(token) = &self.token {
-            token
-        } else {
+        let Some(token) = &self.token else {
             self.result = TokenResult::None;
             return;
         };
 
-        let key = if let Some(key) = &self.key {
-            key
-        } else {
+        let Some(key) = &self.key else {
             let claims = token
                 .deserialize_claims_unchecked::<serde_json::Value>()
                 .ok();
@@ -316,8 +311,8 @@ impl App {
     fn view_claim_category(category_id: &str, claims_html: Html) -> Html {
         let title =
             ClaimCategory::get(category_id).map_or("Other claims", |category| category.title);
-        let header_id = format!("claim-cat-{}-head", category_id);
-        let body_id = format!("claim-cat-{}", category_id);
+        let header_id = format!("claim-cat-{category_id}-head");
+        let body_id = format!("claim-cat-{category_id}");
         html! {
             <div class="accordion-item">
                 <h2 class="accordion-header" id={header_id.clone()}>
@@ -325,7 +320,7 @@ impl App {
                         class="accordion-button ps-0 bg-transparent"
                         type="button"
                         data-bs-toggle="collapse"
-                        data-bs-target={format!("#{}", body_id)}
+                        data-bs-target={format!("#{body_id}")}
                         aria-expanded="true"
                         aria-controls={body_id.clone()}>
                         { title }
