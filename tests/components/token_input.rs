@@ -10,11 +10,10 @@ use yew::Callback;
 
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
+use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase, HS256_TOKEN};
 use justwebtoken_io::components::token_input::{
     TokenInput, TokenInputMessage, TokenInputProperties,
 };
-
-use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase, HS256_TOKEN};
 
 struct TestRig {
     base: TestRigBase<TokenInput>,
@@ -47,7 +46,7 @@ impl TestRig {
 
     fn assert_no_received_token(&self) {
         if let Some(token) = &*self.received_token.borrow() {
-            panic!("Unexpected received token: {:?}", token);
+            panic!("Unexpected received token: {token:?}");
         }
     }
 
@@ -81,12 +80,8 @@ fn incorrect_token_serialization() {
     rig.assert_no_received_token();
 
     let rows = rig.rows();
-    assert!(!rows.contains_key("Algorithm"), "{:?}", rows);
+    assert!(!rows.contains_key("Algorithm"), "{rows:?}");
 
     let feedback = extract_feedback(&rows["Token"]);
-    assert!(
-        feedback.contains("Error deserializing token"),
-        "{}",
-        feedback
-    );
+    assert!(feedback.contains("Error deserializing token"), "{feedback}");
 }

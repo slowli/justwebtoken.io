@@ -11,9 +11,8 @@ use super::{
     key_input::{KeyInput, KeyInputMessage},
     token_input::{TokenInput, TokenInputMessage},
 };
-use crate::fields::ClaimCategory;
 use crate::{
-    fields::StandardClaim,
+    fields::{ClaimCategory, StandardClaim},
     keys::{GenericClaims, GenericToken, KeyInstance},
 };
 
@@ -118,16 +117,12 @@ impl Default for AppState {
 
 impl AppState {
     fn update(&mut self) {
-        let token = if let Some(token) = &self.token {
-            token
-        } else {
+        let Some(token) = &self.token else {
             self.result = TokenResult::None;
             return;
         };
 
-        let key = if let Some(key) = &self.key {
-            key
-        } else {
+        let Some(key) = &self.key else {
             let claims = token
                 .deserialize_claims_unchecked::<serde_json::Value>()
                 .ok();

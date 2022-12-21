@@ -8,14 +8,13 @@ use web_sys::Element;
 
 use std::collections::HashMap;
 
-use justwebtoken_io::{
-    components::{App, AppMessage, AppProperties},
-    keys::KeyInstance,
-};
-
 use super::{
     assert_no_child, extract_main_value, extract_rows, select_single_element, TestRigBase,
     HS256_KEY, HS256_TOKEN, K256_JWK,
+};
+use justwebtoken_io::{
+    components::{App, AppMessage, AppProperties},
+    keys::KeyInstance,
 };
 
 type TestRig = TestRigBase<App>;
@@ -37,7 +36,7 @@ fn info_alert_is_displayed_by_default() {
 
     let alert = select_single_element(&rig.root_element, ".card-alert.border-info");
     let alert_text = alert.text_content().unwrap();
-    assert!(alert_text.contains("No key / token"), "{}", alert_text);
+    assert!(alert_text.contains("No key / token"), "{alert_text}");
 }
 
 #[wasm_bindgen_test]
@@ -69,23 +68,17 @@ fn error_is_displayed_for_incorrect_key_type() {
 
     let alert = select_single_element(&rig.root_element, ".card-alert.border-danger");
     let alert_text = alert.text_content().unwrap();
-    assert!(
-        alert_text.contains("Error verifying token"),
-        "{}",
-        alert_text
-    );
+    assert!(alert_text.contains("Error verifying token"), "{alert_text}");
     assert!(
         alert_text.contains("Token algorithm (HS256) differs from expected (ES256K)"),
-        "{}",
-        alert_text
+        "{alert_text}"
     );
     assert!(
         alert_text.contains("Check that the key is appropriate"),
-        "{}",
-        alert_text
+        "{alert_text}"
     );
 
     // Claims should still be displayed, albeit with the danger alert.
     let claims = get_decoded_claims(&rig.root_element);
-    assert_eq!(claims.len(), 3, "{:?}", claims);
+    assert_eq!(claims.len(), 3, "{claims:?}");
 }

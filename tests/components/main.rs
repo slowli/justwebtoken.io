@@ -39,7 +39,7 @@ impl<C: Component> Drop for TestRigBase<C> {
     fn drop(&mut self) {
         if let Some(parent) = self.root_element.parent_element() {
             if let Err(err) = parent.remove_child(self.root_element.as_ref()) {
-                eprintln!("Error disposing root element for test rig: {:?}", err);
+                eprintln!("Error disposing root element for test rig: {err:?}");
             }
         }
     }
@@ -66,17 +66,17 @@ impl<C: Component> TestRigBase<C> {
 
 fn assert_no_child(root: &Element, selector: &str) {
     let selected = root.query_selector(selector).unwrap_or_else(|err| {
-        panic!("Cannot query `{}` from {:?}: {:?}", selector, root, err);
+        panic!("Cannot query `{selector}` from {root:?}: {err:?}");
     });
     if let Some(selected) = selected {
-        panic!("Unexpected element `{}`: {:?}", selector, selected);
+        panic!("Unexpected element `{selector}`: {selected:?}");
     }
 }
 
 fn select_elements(root: &Element, selector: &str) -> impl Iterator<Item = Element> {
     let nodes = root
         .query_selector_all(selector)
-        .unwrap_or_else(|e| panic!("Querying elements `{}` failed: {:?}", selector, e));
+        .unwrap_or_else(|err| panic!("Querying elements `{selector}` failed: {err:?}"));
 
     (0..nodes.length()).filter_map(move |i| nodes.get(i).unwrap().dyn_into::<Element>().ok())
 }
@@ -87,8 +87,8 @@ fn select_single_element(root: &Element, selector: &str) -> Element {
     let second = iter.next();
 
     match (first, second) {
-        (None, _) => panic!("`{}` did not match any elements in {:?}", selector, root),
-        (Some(_), Some(_)) => panic!("`{}` matched multiple elements in {:?}", selector, root),
+        (None, _) => panic!("`{selector}` did not match any elements in {root:?}"),
+        (Some(_), Some(_)) => panic!("`{selector}` matched multiple elements in {root:?}"),
         (Some(single), None) => single,
     }
 }

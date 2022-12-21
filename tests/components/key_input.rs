@@ -11,12 +11,11 @@ use yew::Callback;
 
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
+use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase, K256_JWK};
 use justwebtoken_io::{
     components::key_input::{KeyInput, KeyInputMessage, KeyInputProperties},
     keys::KeyInstance,
 };
-
-use super::{extract_feedback, extract_main_value, extract_rows, TestRigBase, K256_JWK};
 
 struct TestRig {
     base: TestRigBase<KeyInput>,
@@ -49,7 +48,7 @@ impl TestRig {
 
     fn assert_no_received_key(&self) {
         if let Some(key) = &*self.received_key.borrow() {
-            panic!("Unexpected received key: {:?}", key);
+            panic!("Unexpected received key: {key:?}");
         }
     }
 
@@ -84,10 +83,10 @@ fn incorrect_key_serialization() {
     rig.assert_no_received_key();
 
     let rows = rig.rows();
-    assert!(!rows.contains_key("Type"), "{:?}", rows);
+    assert!(!rows.contains_key("Type"), "{rows:?}");
 
     let feedback = extract_feedback(&rows["Verifying key"]);
-    assert!(feedback.contains("expected value"), "{}", feedback);
+    assert!(feedback.contains("expected value"), "{feedback}");
 }
 
 /// If the key can be parsed, but has invalid type, both feedback and key attributes
@@ -110,7 +109,6 @@ fn unsupported_key_type() {
     let feedback = extract_feedback(&rows["Verifying key"]);
     assert!(
         feedback.contains("`crv` has unexpected value"),
-        "{}",
-        feedback
+        "{feedback}"
     );
 }

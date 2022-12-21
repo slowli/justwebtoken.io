@@ -220,7 +220,6 @@ impl Component for KeyInput {
 
     fn create(ctx: &Context<Self>) -> Self {
         ctx.props().component_ref.link_with(ctx.link().clone());
-
         let (state_manager, init_state) =
             SavedStateManager::new(Self::STORAGE_KEY, ctx.props().save);
 
@@ -228,7 +227,6 @@ impl Component for KeyInput {
             state: KeyInputState::default(),
             state_manager,
         };
-
         if let Some(key) = init_state {
             this.update(ctx, KeyInputMessage::SetKey(key));
         }
