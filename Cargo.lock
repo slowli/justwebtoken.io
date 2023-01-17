@@ -679,7 +679,7 @@ dependencies = [
  "getrandom",
  "gloo-timers",
  "jwt-compact",
- "k256",
+ "k256 0.12.0",
  "linked-hash-map",
  "once_cell",
  "serde",
@@ -704,7 +704,7 @@ dependencies = [
  "chrono",
  "ed25519-compact",
  "hmac",
- "k256",
+ "k256 0.11.6",
  "rand_core",
  "rsa",
  "serde",
@@ -725,6 +725,16 @@ dependencies = [
  "ecdsa",
  "elliptic-curve",
  "sha2",
+]
+
+[[package]]
+name = "k256"
+version = "0.12.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "92a55e0ff3b72c262bcf041d9e97f1b84492b68f1c1a384de2323d3dc9403397"
+dependencies = [
+ "cfg-if",
+ "elliptic-curve",
 ]
 
 [[package]]
