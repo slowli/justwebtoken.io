@@ -50,9 +50,9 @@ async fn claims_are_displayed_for_correct_token() {
     rig.send_message(AppMessage::new_token(Some(token))).await;
 
     let claims = get_decoded_claims(&rig.root_element);
-    assert_eq!(claims.len(), 3, "{:?}", claims);
+    assert_eq!(claims.len(), 3, "{claims:?}");
     let exp = extract_main_value(&claims["Expiration timestamp"]);
-    assert_eq!(exp, "2011-03-22 18:43:00 UTC Token has expired");
+    assert_eq!(exp, "2011-03-22 18:43:00 UTC token has expired");
     let issuer = extract_main_value(&claims["Issuer"]);
     assert_eq!(issuer, "\"joe\"");
 }
@@ -70,7 +70,7 @@ async fn error_is_displayed_for_incorrect_key_type() {
     let alert_text = alert.text_content().unwrap();
     assert!(alert_text.contains("Error verifying token"), "{alert_text}");
     assert!(
-        alert_text.contains("Token algorithm (HS256) differs from expected (ES256K)"),
+        alert_text.contains("token algorithm (HS256) differs from expected (ES256K)"),
         "{alert_text}"
     );
     assert!(
