@@ -127,8 +127,8 @@ fn generate_slice_fn<T: fmt::Display>(
 }
 
 fn main() -> Result<(), Box<dyn Error>> {
-    let src_file = fs::read("src/fields.toml")?;
-    let fields: StandardFields = toml::from_slice(&src_file)?;
+    let src_file = fs::read_to_string("src/fields.toml")?;
+    let fields: StandardFields = toml::from_str(&src_file)?;
 
     let out_dir = env::var_os("OUT_DIR").unwrap();
     let dest_path = Path::new(&out_dir).join("std_maps.rs");
