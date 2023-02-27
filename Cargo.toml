@@ -15,7 +15,7 @@ wasm-opt = ["-Os", "--enable-mutable-globals"]
 crate-type = ["cdylib", "rlib"]
 
 [dependencies]
-base64ct = { version = "1.5.2", features = ["alloc"] }
+base64ct = { version = "1.6.0", features = ["alloc"] }
 chrono = { version = "0.4.22", default-features = false, features = ["wasmbind"] }
 ed25519-compact = { version = "2.0", default-features = false }
 k256 = { version = "0.12", default-features = false }
