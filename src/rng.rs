@@ -1,6 +1,8 @@
 //! Simpler CSPRNG binding to get rid of dynamic `require` calls, which (reasonably)
 //! irritate Webpack.
 
+#![allow(clippy::no_mangle_with_rust_abi)] // emitted by `register_custom_getrandom!`
+
 use getrandom::{register_custom_getrandom, Error};
 use wasm_bindgen::prelude::*;
 

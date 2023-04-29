@@ -6,7 +6,8 @@
     clippy::non_ascii_literal,
     clippy::module_name_repetitions,
     clippy::must_use_candidate,
-    clippy::unused_unit
+    clippy::unused_unit, // emitted by `wasm_bindgen` proc macro
+    clippy::let_underscore_untyped // emitted by `yew::html!` proc macro
 )]
 
 use wasm_bindgen::prelude::*;
