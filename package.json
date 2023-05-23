@@ -42,7 +42,7 @@
     "pug-loader": "^2.4.0",
     "rimraf": "^5.0.0",
     "sass": "^1.62.0",
-    "sass-loader": "^13.2.0",
+    "sass-loader": "^13.3.0",
     "stylelint": "^15.6.0",
     "stylelint-config-recommended-scss": "^11.0.0",
     "toml": "^3.0.0",
