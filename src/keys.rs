@@ -61,9 +61,9 @@ impl KeyInstance {
         let alg = token.algorithm();
         match self {
             Self::Symmetric(secret) => match alg {
-                "HS256" => Hs256.validate_integrity(token, &Hs256Key::new(secret)),
-                "HS384" => Hs384.validate_integrity(token, &Hs384Key::new(secret)),
-                "HS512" => Hs512.validate_integrity(token, &Hs512Key::new(secret)),
+                "HS256" => Hs256.validator(&Hs256Key::new(secret)).validate(token),
+                "HS384" => Hs384.validator(&Hs384Key::new(secret)).validate(token),
+                "HS512" => Hs512.validator(&Hs512Key::new(secret)).validate(token),
                 _ => Err(ValidationError::AlgorithmMismatch {
                     expected: "HS256, HS384 or HS512".to_owned(),
                     actual: alg.to_owned(),
@@ -76,16 +76,17 @@ impl KeyInstance {
                     expected: "RS* or PS* algorithm".to_owned(),
                     actual: alg.to_owned(),
                 })?
-                .validate_integrity(token, key),
+                .validator(key)
+                .validate(token),
 
-            Self::Ed25519(key) => Ed25519.validate_integrity(token, key),
+            Self::Ed25519(key) => Ed25519.validator(key).validate(token),
 
-            Self::K256(key) => Es256k::<Sha256>::default().validate_integrity(token, key),
+            Self::K256(key) => Es256k::<Sha256>::default().validator(key).validate(token),
         }
     }
 
     pub fn random_token(key: &Hs256Key) -> String {
-        let header = Header::default()
+        let header = Header::empty()
             .with_token_type("JWT")
             .with_key_id(Self::random_uuid().to_string());
 
@@ -99,7 +100,7 @@ impl KeyInstance {
             .set_duration_and_issuance(&TimeOptions::default(), Duration::hours(1));
 
         Hs256
-            .token(header, &claims, key)
+            .token(&header, &claims, key)
             .expect_throw("cannot create token")
     }
 

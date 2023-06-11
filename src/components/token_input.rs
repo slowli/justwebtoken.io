@@ -1,7 +1,7 @@
 //! Row with the JSON web token input.
 
 use base64ct::{Base64UrlUnpadded, Encoding};
-use jwt_compact::{Header, ParseError, UntrustedToken};
+use jwt_compact::{Header, ParseError, Thumbprint, UntrustedToken};
 use wasm_bindgen::{JsCast, UnwrapThrowExt};
 use web_sys::{HtmlTextAreaElement, InputEvent};
 use yew::{classes, html, Callback, Component, Context, Html, Properties};
@@ -84,9 +84,9 @@ impl ParsedHeader {
                 } else {
                     html!{}
                 }}
-                { if let Some(cert_thumb) = &self.header.certificate_thumbprint {
-                    let cert_thumb = Base64UrlUnpadded::encode_string(cert_thumb);
-                    StandardHeader::by_name("x5t#S256").with_code_value(&cert_thumb).view_aux()
+                { if let Some(Thumbprint::Bytes(thumb)) = &self.header.certificate_thumbprint {
+                    let thumb = Base64UrlUnpadded::encode_string(thumb);
+                    StandardHeader::by_name("x5t#S256").with_code_value(&thumb).view_aux()
                 } else {
                     html!{}
                 }}
