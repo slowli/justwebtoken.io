@@ -31,7 +31,7 @@ yew = { version = "0.20.0", features = ["csr"] }
 getrandom = { version = "0.2", features = ["custom"] }
 
 [dependencies.jwt-compact]
-version = "0.7.0"
+version = "0.8.0-beta.1"
 default-features = false
 features = ["clock", "ed25519-compact", "rsa", "k256"]
 
