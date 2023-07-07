@@ -43,7 +43,7 @@
     "rimraf": "^5.0.0",
     "sass": "^1.63.2",
     "sass-loader": "^13.3.1",
-    "stylelint": "^15.8.0",
+    "stylelint": "^15.10.1",
     "stylelint-config-recommended-scss": "^12.0.0",
     "toml": "^3.0.0",
     "wasm-pack": "^0.12.0",
