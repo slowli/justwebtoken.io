@@ -38,7 +38,7 @@ features = ["clock", "ed25519-compact", "rsa", "k256"]
 [dev-dependencies]
 assert_matches = "1.5.0"
 const-decoder = "0.3.0"
-gloo-timers = { version = "0.2.5", features = ["futures"] }
+gloo-timers = { version = "0.3.0", features = ["futures"] }
 wasm-bindgen-test = "0.3.28"
 
 [build-dependencies]
