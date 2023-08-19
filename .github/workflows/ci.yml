@@ -25,10 +25,9 @@ jobs:
         with:
           node-version: 18.x
       - name: Install Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@master
         with:
           toolchain: stable
-          override: true
           components: rustfmt, clippy
       - name: Install wasm-pack
         uses: jetli/wasm-pack-action@v0.4.0
@@ -43,10 +42,7 @@ jobs:
       - name: Format Rust code
         run: "npm run lint:fmt"
       - name: Clippy
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --workspace --all-targets -- -D warnings
+        run: cargo clippy --workspace --all-targets -- -D warnings
 
       # Tests
       - name: Test
