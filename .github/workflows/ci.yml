@@ -33,6 +33,11 @@ jobs:
         uses: jetli/wasm-pack-action@v0.4.0
         with:
           version: latest
+      - name: Install cargo-deny
+        uses: baptiste0928/cargo-install@v2
+        with:
+          crate: cargo-deny
+          version: "^0.14"
 
       # `--force` flag is required because of pug@3 conflicting with pug-loader peer dependency.
       # pug@3 works fine in practice.
@@ -43,6 +48,8 @@ jobs:
         run: "npm run lint:fmt"
       - name: Clippy
         run: cargo clippy --workspace --all-targets -- -D warnings
+      - name: Check dependencies
+        run: cargo deny check
 
       # Tests
       - name: Test
