@@ -32,7 +32,7 @@ impl Field {
     }
 
     pub fn with_code_value(self, value: &dyn fmt::Display) -> FieldWithValue {
-        self.with_html_value(html! { <code>{ value }</code> })
+        self.with_html_value(html! { <code>{ value.to_string() }</code> })
     }
 }
 
