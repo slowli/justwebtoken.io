@@ -318,7 +318,7 @@ impl KeyInput {
 
     fn view_err(err: &dyn fmt::Display) -> Html {
         html! {
-            <p class="invalid-feedback mb-1">{ err }</p>
+            <p class="invalid-feedback mb-1">{ err.to_string() }</p>
         }
     }
 }

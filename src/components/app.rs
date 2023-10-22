@@ -64,7 +64,7 @@ impl ExtendedValidationError {
             "Error verifying token",
             html! {
                 <>
-                    <p class="card-text">{ err }</p>
+                    <p class="card-text">{ err.to_string() }</p>
                     { if let Some(tip) = tip {
                         html! {
                             <p class="card-text text-muted">
@@ -353,9 +353,9 @@ impl App {
             }
         });
         let value = if show_as_code {
-            html! { <><code>{ value }</code>{ err }</> }
+            html! { <><code>{ value.to_string() }</code>{ err }</> }
         } else {
-            html! { <>{ value }{ err }</> }
+            html! { <>{ value.to_string() }{ err }</> }
         };
         claim.field.with_html_value(value).view_as_claim(field_name)
     }
