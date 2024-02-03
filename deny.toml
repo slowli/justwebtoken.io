@@ -10,6 +10,10 @@ unsound = "deny"
 yanked = "deny"
 notice = "warn"
 severity-threshold = "Medium"
+ignore = [
+  # Marvin attack fot the `rsa` crate (there's no fix yet)
+  "RUSTSEC-2023-0071",
+]
 
 [licenses]
 unlicensed = "deny"
