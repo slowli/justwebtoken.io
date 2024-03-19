@@ -36,12 +36,12 @@ allow-wildcard-paths = true
 skip = [
   # Old version used by `yew-macro`
   { name = "syn", version = "^1" },
-  # Old version used by `yew` via `gloo-worker` and `proc-macro-crate`
-  { name = "toml_edit", version = "^0.19" },
 ]
 skip-tree = [
   # Old version used by `yew` via `prokio` together with the new version
   { name = "gloo", version = "^0.8" },
+  # Old version used by `yew` via `gloo-worker` and `proc-macro-crate`
+  { name = "toml_edit", version = "^0.19" },
 ]
 
 [sources]
