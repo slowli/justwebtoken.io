@@ -96,8 +96,10 @@ impl KeyInstance {
             "jti": Self::random_uuid().to_string(),
             "aud": ["https://justwebtoken.io/", "https://example.com"],
         });
-        let claims = GenericClaims::new(claims)
-            .set_duration_and_issuance(&TimeOptions::default(), Duration::hours(1));
+        let claims = GenericClaims::new(claims).set_duration_and_issuance(
+            &TimeOptions::default(),
+            Duration::try_hours(1).unwrap_throw(),
+        );
 
         Hs256
             .token(&header, &claims, key)
