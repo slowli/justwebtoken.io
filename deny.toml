@@ -1,22 +1,17 @@
 # `cargo-deny` configuration.
 
+[output]
 feature-depth = 1
 
 [advisories]
 db-urls = ["https://github.com/rustsec/advisory-db"]
-vulnerability = "deny"
-unmaintained = "deny"
-unsound = "deny"
 yanked = "deny"
-notice = "warn"
-severity-threshold = "Medium"
 ignore = [
-  # Marvin attack fot the `rsa` crate (there's no fix yet)
-  "RUSTSEC-2023-0071",
+  "RUSTSEC-2023-0071", # Marvin attack fot the `rsa` crate (there's no fix yet)
+  "RUSTSEC-2024-0370", # proc-macro-error is unsupported; no fix yet
 ]
 
 [licenses]
-unlicensed = "deny"
 allow = [
   # Permissive open-source licenses
   "MIT",
@@ -24,9 +19,6 @@ allow = [
   "BSD-3-Clause",
   "Unicode-DFS-2016",
 ]
-copyleft = "deny"
-allow-osi-fsf-free = "neither"
-default = "deny"
 confidence-threshold = 0.8
 
 [bans]
